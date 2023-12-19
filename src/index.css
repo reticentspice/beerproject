@@ -1,0 +1,7 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+.accordion-item.active .accordion-icon {
+    transform: rotate(180deg);
+}
