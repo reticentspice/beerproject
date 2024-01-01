@@ -1,19 +1,24 @@
 
-
 ReactDOM.render(
     <div className="App mx-auto items-center text-center">
         <Header />
         <main>
-            <p className="text-base text-gray-900 italic dark:text-white">*Ignore any options you don't care about.</p>
-            <form method="post" action="/submit" encType="application/x-www-form-urlencoded">
-                <Dietary />
+            <Tabs />
+            <div id="default-tab-content">
+                <div className="p-4 rounded-lg" id="myBeer" role="tabpanel" aria-labelledby="my-beer-tab">
+                    <p className="text-base text-gray-900 italic dark:text-white">*Ignore any options you don't care about.</p>
+                    <form method="post" action="/submit" encType="application/x-www-form-urlencoded">
+                        <Dietary />
 
 
 
-                <Form />
-                <ImportanceSelector />
-                <SubmitButton />
-            </form>
+                        <Form />
+                        <ImportanceSelector />
+                        <SubmitButton />
+                    </form></div>
+                <RandomDiv />
+                <SimilarDiv />
+            </div>
         </main>
     </div>, document.getElementById('root')
 );
@@ -24,6 +29,22 @@ function Header() {
         <h2 className="mb-4 text-4xl font-extrabold text-center mx-auto leading-none tracking-tight text-gray-900 md:text-5xl 
     lg:text-6xl dark:text-white bg-green-700">Build Your Perfect Beer</h2>
     </header>);
+}
+
+function Tabs() {
+    return (<div className="mb-4 border-b border-gray-200 dark:border-gray-700" id="mainTab">
+        <ul className="flex flex-wrap -mb-px text-sm text-white font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            <li className="me-2" role="presentation">
+                <button className="inline-block p-4 border-b-2 text-white rounded-t-lg" id="my-beer-tab" data-tabs-target="#myBeer" type="button" role="tab" aria-controls="myBeer" aria-selected="false">Build Custom Beer</button>
+            </li>
+            <li className="me-2" role="presentation">
+                <button className="inline-block p-4 border-b-2 text-white rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="similar-beer-tab" data-tabs-target="#similar" type="button" role="tab" aria-controls="similarBeer" aria-selected="false">Find Similar Beers</button>
+            </li>
+            <li className="me-2" role="presentation">
+                <button className="inline-block p-4 border-b-2 text-white rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="random-beer-tab" data-tabs-target="#randomBeer" type="button" role="tab" aria-controls="randomBeer" aria-selected="false">Get Random Beer</button>
+            </li>
+        </ul>
+    </div>)
 }
 
 function Dietary() {
@@ -289,7 +310,7 @@ function FlavourDiv3() {
 
 function ImportanceSelector() {
     return (
-        <div className=" text-center flex flex-col items-center justify-center mx-auto mb-20 w-2/3">
+        <div className=" text-center flex flex-col items-center justify-center mx-auto mb-10 w-2/3">
 
             <div className="w-full px-8 mx-auto space-y-2 flex items-center justify-center lg:max-w-md">
 
@@ -355,6 +376,59 @@ function SubmitButton() {
         px-5 py-2.5 me-2 mb-24 dark:bg-green-600 dark:hover:bg-green-700 
         dark:focus:ring-green-800">Get recommendations</button>)
 };
+
+function RandomDiv() {
+    return (<div className="hidden p-4 rounded-lg" id="randomBeer" role="tabpanel" aria-labelledby="random-beer-tab">
+        <form method="post" action="/getRandom">
+            <button id="getRandom" type="submit" value="Submit" className="focus:outline-none text-white 
+        bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm 
+        px-5 py-2.5 me-2 mt-4 mb-4 dark:bg-green-600 dark:hover:bg-green-700 
+        dark:focus:ring-green-800">Surprise me</button></form></div>)
+};
+
+function SimilarDiv() {
+    return (<div className="hidden p-4 rounded-lg" id="similarBeer" role="tabpanel" aria-labelledby="similar-beer-tab">
+        <label htmlFor="similarBox" className="text-base text-gray-900 italic dark:text-white">Type the name of a beer you
+            love into the box below!</label><br /><br />
+        <input type="text" id="similarBox"></input>
+    </div>)
+}
+
+document.getElementById("my-beer-tab").addEventListener("click", function () {
+    document.getElementById("myBeer").style.display = "block";
+    document.getElementById("randomBeer").style.display = "none";
+    document.getElementById("similarBeer").style.display = "none";
+    document.getElementById("my-beer-tab").classList.add("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("random-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("similar-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+})
+
+document.getElementById("random-beer-tab").addEventListener("click", function () {
+    document.getElementById("myBeer").style.display = "none";
+    document.getElementById("randomBeer").style.display = "block";
+    document.getElementById("similarBeer").style.display = "none";
+    document.getElementById("random-beer-tab").classList.add("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("my-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("similar-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+})
+
+document.getElementById("similar-beer-tab").addEventListener("click", function () {
+    document.getElementById("myBeer").style.display = "none";
+    document.getElementById("randomBeer").style.display = "none";
+    document.getElementById("similarBeer").style.display = "block";
+    document.getElementById("similar-beer-tab").classList.add("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("my-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("random-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
+        "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+})
 
 let optionsList = [];
 let previousType;

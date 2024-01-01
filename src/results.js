@@ -13,6 +13,10 @@ function showBeers() {
             // Use the data in the frontend
 
             sortedMatches = data.sortedMatches;
+
+            if (!sortedMatches) {
+                ReactDOM.render(<EmptyList />, recList);
+            }
             if (sortedMatches.length == 0) {
                 ReactDOM.render(<EmptyList />, recList);
             }
@@ -48,13 +52,22 @@ function BeerCard({ beer }) {
         beer.beerIngredients = ["unknown"];
     }
 
-
+    if (!beer.beerDesc) {
+        beer.beerDesc = "Sorry, but we don't have a description for this beer yet."
+    }
 
     const placeholderImage = "placeholder.png";
 
     const onImageError = (e) => {
         e.target.src = placeholderImage
     }
+
+    let shortBeer = {
+        "beerName": beer.beerName, "beerImage": beer.beerImage, "beerURL": beer.beerURL,
+        "brewery": beer.brewery, "beerType": beer.beerType, "beerABV": beer.beerABV, "isVegan": beer.isVegan,
+        "isGF": beer.isGF, "isLowCal": beer.isLowCal, "isAlcoholFree": beer.isAlcoholFree
+    };
+    let beerInfo = JSON.stringify(shortBeer);
 
     return (<div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 
     dark:border-gray-700 m-0.5">
@@ -73,8 +86,10 @@ function BeerCard({ beer }) {
                 <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Gluten free: {beer.isGF}</p>
                 <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Vegan: {beer.isVegan}</p>
                 <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Low-calorie: {beer.isLowCal}</p>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Low-alcohol: {beer.isAlcoholFree}</p><br />
-            </div></a></div>);
+                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Low-alcohol: {beer.isAlcoholFree}</p></div></a><br />
+        <br />
+        <div className="p-5"><a href={`/report?beer=${beerInfo}`} className="reportError">Report incorrect info for {beer.beerName}</a>
+        </div></div>);
 }
 
 function EmptyList() {

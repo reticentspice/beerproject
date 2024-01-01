@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 const express = require("express");
-const http = require("http");
 const bodyParser = require("body-parser");
+require("dotenv").config();
 
 const app = express();
 const port = 3000;
@@ -16,20 +16,14 @@ app.get("/", (req, res, next) => {
 });
 
 //Without the code below (or something similar), the front-end script file doesn't work.
-app.get('/src/script.js', (req, res) => {
-    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\src\\script.js");
-});
+
 
 app.get('/results', (req, res) => {
     res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\results.html");
 });
 
-app.get('/src/results.js', (req, res) => {
-    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\src\\results.js");
-});
-
-app.get('/dist/output.css', (req, res) => {
-    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\dist\\output.css");
+app.get('/report', (req, res) => {
+    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\report.html");
 });
 
 app.get('/getMatches', (req, res) => {
@@ -215,8 +209,11 @@ function Beer(beerName, beerType, preciseBeerType, beerFlavours, beerABV, beerAB
     this.matchScore = matchScore;
 }
 
+const username = process.env.MONGO_USERNAME;
+const password = process.env.MONGO_PASSWORD;
+
 async function main(favouriteBeer) {
-    const uri = "mongodb+srv://randomlywatching:fx2kAgObMWyqMCgm@beerdb.pmiqvcn.mongodb.net/?retryWrites=true&w=majority";
+    const uri = `mongodb+srv://${username}:${password}@beerdb.pmiqvcn.mongodb.net/?retryWrites=true&w=majority`;
     const client = new MongoClient(uri);
     try {
         await client.connect();
@@ -233,13 +230,48 @@ async function main(favouriteBeer) {
     };
 };
 
+async function getRandom() {
+    const uri = `mongodb+srv://${username}:${password}@beerdb.pmiqvcn.mongodb.net/?retryWrites=true&w=majority`;
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        console.log("Connected");
+
+        let mongoOutput = await client.db("BeerDB").collection("beers").aggregate([
+            {
+                "$sample": {
+                    "size": 3
+                }
+            }
+        ]);
+        sortedMatches = await mongoOutput.toArray();
+        return sortedMatches;
+
+    }
+    catch (error) {
+        console.error(error);
+    }
+    finally {
+        await client.close();
+    };
+};
+
 app.post("/submit", async function (req, res) {
     console.log("Click");
     const favouriteBeer = getInfo(req);
-    console.log(favouriteBeer);
     getRequired(req, favouriteBeer);
     getPreferences(req, requiredItems);
     await main(favouriteBeer).catch(console.error);
+    res.redirect("/results");
+})
+
+app.post("/report", function (req, res) {
+    let beerNameToReport = req.query.name;
+    res.redirect(`/report?name=${beerNameToReport}`);
+})
+
+app.post("/getRandom", async function (req, res) {
+    await getRandom();
     res.redirect("/results");
 })
 
@@ -314,7 +346,6 @@ async function findBeers(client, favouriteBeer, requiredItems) {
         console.log("Result!");
 
         for await (const doc of result) {
-            console.log(doc);
             doc.matchScore = 0;
 
             for (let [key, value] of Object.entries(doc)) {
@@ -376,9 +407,11 @@ async function findBeers(client, favouriteBeer, requiredItems) {
                 doc.matchScore = 99.9;
             }
             potentialMatches.push(doc);
-            console.log(doc.matchScore);
         }
-        sortedMatches = potentialMatches.sort((a, b) => b.matchScore - a.matchScore);
+        sortedMatches = potentialMatches.sort((a, b) => {
+            const scoreDiff = b.matchScore - a.matchScore;
+            return scoreDiff !== 0 ? scoreDiff : Math.random() - 0.5;
+        });
         return sortedMatches;
     }
     else {
