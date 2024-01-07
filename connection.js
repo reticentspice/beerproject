@@ -1,6 +1,7 @@
 const { MongoClient } = require("mongodb");
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
@@ -10,13 +11,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("src"));
 app.use(express.static("img"));
 app.use(express.static("dist"));
+app.use(cors());
 
 app.get("/", (req, res, next) => {
     res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\index.html");
 });
-
-//Without the code below (or something similar), the front-end script file doesn't work.
-
 
 app.get('/results', (req, res) => {
     res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\results.html");
@@ -30,13 +29,54 @@ app.get('/getMatches', (req, res) => {
     res.json({ sortedMatches });
 });
 
-let matchScore;
+//The request is coming through fine and seems to be correctly formatted. It looks as if the problem is with accessing
+//the DB, which isn't returning any results.
+
+const username = process.env.MONGO_USERNAME;
+const password = process.env.MONGO_PASSWORD;
+const uri = `mongodb+srv://${username}:${password}@beerdb.pmiqvcn.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri);
+/*let collection;
+app.get("/search", async (request, response) => {
+    try {
+        let result = await collection.aggregate([
+            {
+                "$search": {
+                    "autocomplete": {
+                        "query": `${request.query.query}`,
+                        "path": "beerName",
+                        "fuzzy": {
+                            "maxEdits": 2,
+                            "prefixLength": 3
+                        }
+                    }
+                }
+            }
+        ]).toArray();
+        response.send(result);
+        console.log("Search GET: " + result);
+    } catch (e) {
+        response.status(500).send({ message: e.message });
+    }
+});
+
+app.get("/get/:id", async (request, response) => {
+    try {
+        console.log("Getting ID");
+        let result = await collection.findOne({ "_id": ObjectID(request.params.id) });
+        response.send(result);
+        console.log("ID get result: " + result);
+    } catch (e) {
+        response.status(500).send({ message: e.message });
+    }
+});*/
+
 let requiredItems;
 
 let reallyImportant;
 let kindaImportant;
 let notSoImportant;
-let numberForDivisor = 0;
+let numberForDivisor;
 let sortedMatches;
 
 //This function collects information from the form.
@@ -55,8 +95,8 @@ function getInfo(req) {
     let newIsAlcoholFree = null;
 
     if (req.body.vegan === "isVegan") {
-        numberForDivisor += 1;
         newIsVegan = "Yes";
+        numberForDivisor += 1;
     }
 
     if (req.body.glutenFree === "isGF") {
@@ -124,42 +164,52 @@ function getRequired(req, favouriteBeer) {
     requiredFlavours = [];
     if (req.body.vegan === "isVegan") {
         requiredItems.push({ isVegan: favouriteBeer.isVegan });
+        numberForDivisor += 9;
     }
 
     if (req.body.glutenFree === "isGF") {
         requiredItems.push({ isGF: favouriteBeer.isGF });
+        numberForDivisor += 9;
     }
 
     if (req.body.lowCal === "isLowCal") {
         requiredItems.push({ isLowCal: favouriteBeer.isLowCal });
+        numberForDivisor += 9;
     }
 
     if (req.body.alcoholFree === "isAlcoholFree") {
         requiredItems.push({ isAlcoholFree: favouriteBeer.isAlcoholFree });
+        numberForDivisor += 9;
     }
 
     if (req.body["beerTypeReq"] && req.body["beerTypeReq"] === "required") {
         requiredItems.push({ beerType: favouriteBeer.beerType });
+        numberForDivisor += 9;
     }
 
     if (req.body["beerABVReq"] && req.body["beerABVReq"] === "required") {
         requiredItems.push({ beerABVGrade: favouriteBeer.beerABVGrade });
+        numberForDivisor += 9;
     }
 
     if (req.body["beerCountryReq"] && req.body["beerCountryReq"] === "required") {
         requiredItems.push({ beerCountry: favouriteBeer.beerCountry });
+        numberForDivisor += 9;
     }
 
     if (req.body["beerFlavourReq"] && req.body["beerFlavourReq"] === "required") {
         requiredFlavours.push({ beerFlavours: favouriteBeer.beerFlavours[0] });
+        numberForDivisor += 9;
     }
 
     if (req.body["beerFlavour2Req"] && req.body["beerFlavour2Req"] === "required") {
         requiredFlavours.push({ beerFlavours: favouriteBeer.beerFlavours[1] });
+        numberForDivisor += 9;
     }
 
     if (req.body["beerFlavour3Req"] && req.body["beerFlavour3Req"] === "required") {
         requiredFlavours.push({ beerFlavours: favouriteBeer.beerFlavours[2] });
+        numberForDivisor += 9;
     }
     if (requiredFlavours.length !== 0) {
         requiredItems.push([...requiredFlavours]);
@@ -167,10 +217,7 @@ function getRequired(req, favouriteBeer) {
     return requiredItems;
 }
 
-function getPreferences(req, requiredItems) {
-    for (let i = 0; i < requiredItems.length; i++) {
-        numberForDivisor += 9;
-    }
+function getPreferences(req) {
 
     if (req.body["firstOptionsList"] !== "dontCare") {
         reallyImportant = req.body["firstOptionsList"];
@@ -189,7 +236,7 @@ function getPreferences(req, requiredItems) {
 }
 
 function Beer(beerName, beerType, preciseBeerType, beerFlavours, beerABV, beerABVGrade, brewery, beerCountry, beerImage,
-    beerDesc, beerIngredients, beerURL, isVegan, isGF, isLowCal, isAlcoholFree) {
+    beerDesc, beerIngredients, beerURL, isVegan, isGF, isLowCal, isAlcoholFree, matchScore) {
     this.beerName = beerName;
     this.beerType = beerType;
     this.preciseBeerType = preciseBeerType;
@@ -209,12 +256,8 @@ function Beer(beerName, beerType, preciseBeerType, beerFlavours, beerABV, beerAB
     this.matchScore = matchScore;
 }
 
-const username = process.env.MONGO_USERNAME;
-const password = process.env.MONGO_PASSWORD;
-
 async function main(favouriteBeer) {
-    const uri = `mongodb+srv://${username}:${password}@beerdb.pmiqvcn.mongodb.net/?retryWrites=true&w=majority`;
-    const client = new MongoClient(uri);
+
     try {
         await client.connect();
         console.log("Connected");
@@ -231,8 +274,6 @@ async function main(favouriteBeer) {
 };
 
 async function getRandom() {
-    const uri = `mongodb+srv://${username}:${password}@beerdb.pmiqvcn.mongodb.net/?retryWrites=true&w=majority`;
-    const client = new MongoClient(uri);
     try {
         await client.connect();
         console.log("Connected");
@@ -275,10 +316,39 @@ app.post("/getRandom", async function (req, res) {
     res.redirect("/results");
 })
 
+app.post("/getSimilar", async function (req, res) {
+    requiredItems = [];
+    numberForDivisor = 10;
+    let queryName = req.body["similarBox"];
+    query = { $and: [{ beerName: queryName }] };
+    const result = await client.db("BeerDB").collection("beers").find(query);
+
+    if (result) {
+        for await (let favouriteBeer of result) {
+            favouriteBeer = new Beer(undefined, favouriteBeer.beerType, favouriteBeer.preciseBeerType,
+                favouriteBeer.beerFlavours, favouriteBeer.beerABV, favouriteBeer.beerABVGrade, favouriteBeer.brewery,
+                favouriteBeer.beerCountry, undefined, undefined, favouriteBeer.beerIngredients,
+                undefined, favouriteBeer.isVegan, favouriteBeer.isGF, favouriteBeer.isLowCal,
+                favouriteBeer.isAlcoholFree, favouriteBeer.matchScore);
+            if (favouriteBeer.isVegan = "No") {
+                favouriteBeer.isVegan = undefined
+            };
+            if (favouriteBeer.isGF = "No") {
+                favouriteBeer.isGF = undefined
+            };
+            if (favouriteBeer.isLowCal = "No") {
+                favouriteBeer.isLowCal = undefined
+            };
+            if (favouriteBeer.isAlcoholFree = "No") {
+                favouriteBeer.isAlcoholFree = undefined
+            };
+            await main(favouriteBeer).catch(console.error);
+            res.redirect("/results");
+        }
+    }
+});
+
 async function findBeers(client, favouriteBeer, requiredItems) {
-    let multiplier = Math.round(100 / parseInt(numberForDivisor) * 10) / 10;
-    console.log("Divisor: " + numberForDivisor);
-    console.log("Multiplier: " + multiplier);
     let query = {};
     sortedMatches = [];
     let potentialMatches = [];
@@ -349,69 +419,75 @@ async function findBeers(client, favouriteBeer, requiredItems) {
             doc.matchScore = 0;
 
             for (let [key, value] of Object.entries(doc)) {
-                if (key === "beerFlavours") {
-                    for (let i = 0; i < doc[key].length; i++) {
-                        for (let j = 0; j < favouriteBeer[key].length; j++) {
+                if (key === "beerFlavours" && value !== null) {
+                    for (let i = 0; i < doc["beerFlavours"].length; i++) {
+                        for (let j = 0; j < favouriteBeer["beerFlavours"].length; j++) {
 
-                            //The code below is currently broken.
-                            if (doc[key][i] == favouriteBeer[key][j]) {
+                            if (doc["beerFlavours"][i] == favouriteBeer["beerFlavours"][j] && favouriteBeer[key][j] !== null) {
                                 for (let k = 0; k < requiredItems.length; k++) {
                                     for (let l = 0; l < requiredItems[k].length; l++) {
-                                        if (requiredItems[k][l]["beerFlavours"] == favouriteBeer[key][j]) {
-                                            doc.matchScore += 10 * multiplier;
+                                        if (requiredItems[k][l]["beerFlavours"] == favouriteBeer["beerFlavours"][j]) {
+                                            doc.matchScore += 9;
                                         }
                                     }
                                 }
 
-                                if (favouriteBeer[key][j] == reallyImportant) {
-                                    doc.matchScore += 6 * multiplier;
+                                if (favouriteBeer[key][j] == reallyImportant && reallyImportant !== undefined) {
+                                    doc.matchScore += 6;
                                 }
-                                else if (favouriteBeer[key][j] == kindaImportant) {
-                                    doc.matchScore += 4 * multiplier;
+                                else if (favouriteBeer[key][j] == kindaImportant && kindaImportant !== undefined) {
+                                    doc.matchScore += 4;
                                 }
-                                else if (favouriteBeer[key][j] == notSoImportant) {
-                                    doc.matchScore += 3 * multiplier;
+                                else if (favouriteBeer[key][j] == notSoImportant && notSoImportant !== undefined) {
+                                    doc.matchScore += 3;
                                 }
                                 else {
-                                    doc.matchScore += multiplier;
+                                    doc.matchScore += 1;
                                 }
                             }
                         }
                     }
                 }
-                else if (value == favouriteBeer[key] && favouriteBeer[key] !== undefined) {
+                else if (value == favouriteBeer[key] && favouriteBeer[key] !== null) {
 
                     for (let i = 0; i < requiredItems.length; i++) {
-                        if (requiredItems[i][key] == favouriteBeer[key]) {
-                            doc.matchScore += 10 * multiplier;
+                        if (requiredItems[i][key] == favouriteBeer[key] && favouriteBeer[key] !== undefined) {
+                            console.log("Item: " + requiredItems[i][key]);
+                            doc.matchScore += 9;
                         }
                     }
 
-                    if (favouriteBeer[key] == reallyImportant) {
-                        doc.matchScore += 6 * multiplier;
+                    if (favouriteBeer[key] == reallyImportant && reallyImportant !== undefined) {
+                        doc.matchScore += 6;
                     }
-                    else if (favouriteBeer[key] == kindaImportant) {
-                        doc.matchScore += 4 * multiplier;
+                    else if (favouriteBeer[key] == kindaImportant && kindaImportant !== undefined) {
+                        doc.matchScore += 4;
                     }
-                    else if (favouriteBeer[key] == notSoImportant) {
-                        doc.matchScore += 3 * multiplier;
+                    else if (favouriteBeer[key] == notSoImportant && notSoImportant !== undefined) {
+                        doc.matchScore += 3;
                     }
-                    else if (favouriteBeer[key] !== "Yes" && favouriteBeer[key] !== "No") {
-                        doc.matchScore += multiplier;
+                    else if (favouriteBeer[key] !== undefined) {
+                        doc.matchScore += 1;
                     }
                 }
 
 
             }
+
+            console.log("Required: " + requiredItems);
+            doc.matchScore = doc.matchScore / numberForDivisor * 100;
             if (doc.matchScore > 100) {
                 doc.matchScore = 99.9;
             }
             potentialMatches.push(doc);
         }
-        sortedMatches = potentialMatches.sort((a, b) => {
+        let sortedMatchesRaw = potentialMatches.sort((a, b) => {
             const scoreDiff = b.matchScore - a.matchScore;
             return scoreDiff !== 0 ? scoreDiff : Math.random() - 0.5;
         });
+        for (let i = 0; i < 12; i++) {
+            sortedMatches.push(sortedMatchesRaw[i]);
+        }
         return sortedMatches;
     }
     else {
@@ -419,6 +495,12 @@ async function findBeers(client, favouriteBeer, requiredItems) {
     }
 };
 
-app.listen(port, () => {
+app.listen(port, async () => {
+    try {
+        await client.connect();
+        collection = client.db("BeerDB").collection("beers");
+    } catch (e) {
+        console.error(e);
+    }
     console.log(`Listening on port ${port} `);
 });
