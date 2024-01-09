@@ -1,9 +1,27 @@
+/*Table of Contents
+1. Require middleware
+2. Set up the app
+3. Set up get requests
+4. Set up essential global variables
+5. getInfo function to collect input from the form
+6. getRequired function to collect required input from the form
+7. getPreferences function to collect information from the importance div
+8. function to define the Beer object
+9. main function to execute the main code
+10. getRandom function to find random beers
+11. post requests to submit, getRandom, and getSimilar (including the getSimilar function)
+12. findBeers function which has the main logic for finding and handling matching beers from the DB
+13. app.listen */
+
+//1. Require middleware
 const { MongoClient } = require("mongodb");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
+const searchArray = require("./arrayToSearch.js");
 
+//2. Set up the app
 const app = express();
 const port = 3000;
 
@@ -13,6 +31,7 @@ app.use(express.static("img"));
 app.use(express.static("dist"));
 app.use(cors());
 
+//3. Set up get requests
 app.get("/", (req, res, next) => {
     res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\index.html");
 });
@@ -29,47 +48,15 @@ app.get('/getMatches', (req, res) => {
     res.json({ sortedMatches });
 });
 
-//The request is coming through fine and seems to be correctly formatted. It looks as if the problem is with accessing
-//the DB, which isn't returning any results.
+app.get("/getArray", (req, res) => {
+    res.json({ searchArray });
+})
 
+//4. Set up essential global variables
 const username = process.env.MONGO_USERNAME;
 const password = process.env.MONGO_PASSWORD;
 const uri = `mongodb+srv://${username}:${password}@beerdb.pmiqvcn.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri);
-/*let collection;
-app.get("/search", async (request, response) => {
-    try {
-        let result = await collection.aggregate([
-            {
-                "$search": {
-                    "autocomplete": {
-                        "query": `${request.query.query}`,
-                        "path": "beerName",
-                        "fuzzy": {
-                            "maxEdits": 2,
-                            "prefixLength": 3
-                        }
-                    }
-                }
-            }
-        ]).toArray();
-        response.send(result);
-        console.log("Search GET: " + result);
-    } catch (e) {
-        response.status(500).send({ message: e.message });
-    }
-});
-
-app.get("/get/:id", async (request, response) => {
-    try {
-        console.log("Getting ID");
-        let result = await collection.findOne({ "_id": ObjectID(request.params.id) });
-        response.send(result);
-        console.log("ID get result: " + result);
-    } catch (e) {
-        response.status(500).send({ message: e.message });
-    }
-});*/
 
 let requiredItems;
 
@@ -79,7 +66,7 @@ let notSoImportant;
 let numberForDivisor;
 let sortedMatches;
 
-//This function collects information from the form.
+//5. getInfo function to collect input from the form
 function getInfo(req) {
     numberForDivisor = 0;
     let newBeerFlavours = [];
@@ -158,6 +145,7 @@ function getInfo(req) {
     return (favouriteBeer);
 }
 
+//6. getRequired function to collect required input from the form
 //This function calculates the info for the required elements to add them to a list to be compared against the DB.
 function getRequired(req, favouriteBeer) {
     requiredItems = [];
@@ -217,6 +205,7 @@ function getRequired(req, favouriteBeer) {
     return requiredItems;
 }
 
+//7. getPreferences function to collect information from the importance div
 function getPreferences(req) {
 
     if (req.body["firstOptionsList"] !== "dontCare") {
@@ -235,6 +224,7 @@ function getPreferences(req) {
     }
 }
 
+//8. function to define the Beer object
 function Beer(beerName, beerType, preciseBeerType, beerFlavours, beerABV, beerABVGrade, brewery, beerCountry, beerImage,
     beerDesc, beerIngredients, beerURL, isVegan, isGF, isLowCal, isAlcoholFree, matchScore) {
     this.beerName = beerName;
@@ -256,6 +246,7 @@ function Beer(beerName, beerType, preciseBeerType, beerFlavours, beerABV, beerAB
     this.matchScore = matchScore;
 }
 
+//9. main function to execute the main code
 async function main(favouriteBeer) {
 
     try {
@@ -273,6 +264,7 @@ async function main(favouriteBeer) {
     };
 };
 
+//10. getRandom function to find random beers
 async function getRandom() {
     try {
         await client.connect();
@@ -297,6 +289,7 @@ async function getRandom() {
     };
 };
 
+//11. post requests to submit, getRandom, and getSimilar (including the getSimilar function)
 app.post("/submit", async function (req, res) {
     console.log("Click");
     const favouriteBeer = getInfo(req);
@@ -318,14 +311,14 @@ app.post("/getRandom", async function (req, res) {
 
 app.post("/getSimilar", async function (req, res) {
     requiredItems = [];
-    numberForDivisor = 10;
+    numberForDivisor = 0;
     let queryName = req.body["similarBox"];
     query = { $and: [{ beerName: queryName }] };
     const result = await client.db("BeerDB").collection("beers").find(query);
 
     if (result) {
         for await (let favouriteBeer of result) {
-            favouriteBeer = new Beer(undefined, favouriteBeer.beerType, favouriteBeer.preciseBeerType,
+            favouriteBeer = new Beer(queryName, favouriteBeer.beerType, favouriteBeer.preciseBeerType,
                 favouriteBeer.beerFlavours, favouriteBeer.beerABV, favouriteBeer.beerABVGrade, favouriteBeer.brewery,
                 favouriteBeer.beerCountry, undefined, undefined, favouriteBeer.beerIngredients,
                 undefined, favouriteBeer.isVegan, favouriteBeer.isGF, favouriteBeer.isLowCal,
@@ -342,12 +335,31 @@ app.post("/getSimilar", async function (req, res) {
             if (favouriteBeer.isAlcoholFree = "No") {
                 favouriteBeer.isAlcoholFree = undefined
             };
+
+            for (const [key, value] of Object.entries(favouriteBeer)) {
+                if (key === "beerFlavours") {
+                    for (let flavour in value) {
+                        console.log(flavour)
+                        numberForDivisor += 1;
+                    }
+                }
+                else if (["beerType", "preciseBeerType", "beerABVGrade", "brewery", "beerCountry",
+                    "isVegan", "isGF", "isLowCal", "isAlcoholFree"].includes(key) &&
+                    value !== undefined &&
+                    value !== null && value !== "") {
+                    console.log(key);
+                    numberForDivisor += 1;
+                }
+            }
+            console.log("Divisor: " + numberForDivisor);
             await main(favouriteBeer).catch(console.error);
+
             res.redirect("/results");
         }
     }
 });
 
+//12. findBeers function which has the main logic for finding and handling matching beers from the DB
 async function findBeers(client, favouriteBeer, requiredItems) {
     let query = {};
     sortedMatches = [];
@@ -452,7 +464,6 @@ async function findBeers(client, favouriteBeer, requiredItems) {
 
                     for (let i = 0; i < requiredItems.length; i++) {
                         if (requiredItems[i][key] == favouriteBeer[key] && favouriteBeer[key] !== undefined) {
-                            console.log("Item: " + requiredItems[i][key]);
                             doc.matchScore += 9;
                         }
                     }
@@ -474,12 +485,15 @@ async function findBeers(client, favouriteBeer, requiredItems) {
 
             }
 
-            console.log("Required: " + requiredItems);
-            doc.matchScore = doc.matchScore / numberForDivisor * 100;
+            doc.matchScore = (doc.matchScore / numberForDivisor * 100).toFixed(2);
+            console.log(doc.beerName);
+            console.log(favouriteBeer.beerName);
             if (doc.matchScore > 100) {
                 doc.matchScore = 99.9;
             }
-            potentialMatches.push(doc);
+            if (doc.beerName !== favouriteBeer.beerName) {
+                potentialMatches.push(doc);
+            }
         }
         let sortedMatchesRaw = potentialMatches.sort((a, b) => {
             const scoreDiff = b.matchScore - a.matchScore;
@@ -495,10 +509,10 @@ async function findBeers(client, favouriteBeer, requiredItems) {
     }
 };
 
+//app.listen
 app.listen(port, async () => {
     try {
         await client.connect();
-        collection = client.db("BeerDB").collection("beers");
     } catch (e) {
         console.error(e);
     }
