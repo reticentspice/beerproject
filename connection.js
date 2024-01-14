@@ -45,7 +45,10 @@ app.get('/report', (req, res) => {
 });
 
 app.get('/getMatches', (req, res) => {
-    res.json({ sortedMatches });
+    res.json({
+        sortedMatches: sortedMatches,
+        favouriteBeer: favouriteBeerProps
+    });
 });
 
 app.get("/getArray", (req, res) => {
@@ -65,11 +68,14 @@ let kindaImportant;
 let notSoImportant;
 let numberForDivisor;
 let sortedMatches;
+let favouriteBeerProps = [];
+let avoidAF = false;
 
 //5. getInfo function to collect input from the form
 function getInfo(req) {
     numberForDivisor = 0;
     let newBeerFlavours = [];
+    let newBeerLOA = null;
     let newBeerType = null;
     let newPreciseBeerType = null;
     let newBeerABVGrade = null;
@@ -83,65 +89,74 @@ function getInfo(req) {
 
     if (req.body.vegan === "isVegan") {
         newIsVegan = "Yes";
+        favouriteBeerProps.push({ isVegan: "Yes" });
         numberForDivisor += 1;
     }
 
     if (req.body.glutenFree === "isGF") {
         numberForDivisor += 1;
         newIsGF = "Yes";
+        favouriteBeerProps.push({ isGF: "Yes" });
     }
 
     if (req.body.lowCal === "isLowCal") {
         numberForDivisor += 1;
         newIsLowCal = "Yes";
+        favouriteBeerProps.push({ isLowCal: "Yes" });
     }
 
     if (req.body.alcoholFree === "isAlcoholFree") {
         numberForDivisor += 1;
         newIsAlcoholFree = "Yes";
+        favouriteBeerProps.push({ isAlcoholFree: "Yes" });
     }
 
     if (req.body["beerType"] !== "Select an option") {
         newBeerType = req.body["beerType"];
+        favouriteBeerProps.push({ beerType: newBeerType });
         numberForDivisor += 1;
     }
 
     if (req.body["beerFlavours"] !== "Select an option") {
         newBeerFlavours.push(req.body["beerFlavours"]);
+        favouriteBeerProps.push({ beerFlavour: newBeerFlavours[0] });
         numberForDivisor += 1;
     }
 
     if (req.body["beerFlavours2"] !== "Select an option") {
         if (req.body["beerFlavours2"]) {
             newBeerFlavours.push(req.body["beerFlavours2"])
+            favouriteBeerProps.push({ beerFlavour: newBeerFlavours[1] });
             numberForDivisor += 1;
         }
     }
     if (req.body["beerFlavours3"] !== "Select an option") {
         if (req.body["beerFlavours3"]) {
             newBeerFlavours.push(req.body["beerFlavours3"])
+            favouriteBeerProps.push({ beerFlavour: newBeerFlavours[2] });
             numberForDivisor += 1;
         }
     }
 
     if (req.body["beerABVGrade"] !== "Select an option") {
         newBeerABVGrade = req.body["beerABVGrade"];
+        favouriteBeerProps.push({ beerABVGrade: newBeerABVGrade });
         numberForDivisor += 1;
     }
 
     if (req.body["beerCountry"] !== "Select an option") {
         newBeerCountry = req.body["beerCountry"];
+        favouriteBeerProps.push({ beerCountry: newBeerCountry });
         numberForDivisor += 1;
     }
 
-    let favouriteBeer = new Beer(null, newBeerType, newPreciseBeerType, newBeerFlavours, null, newBeerABVGrade, newBrewery, newBeerCountry,
+    let favouriteBeer = new Beer(null, newBeerLOA, newBeerType, newPreciseBeerType, newBeerFlavours, null, newBeerABVGrade, newBrewery, newBeerCountry,
         null, null, newIngredients, null, newIsVegan, newIsGF, newIsLowCal, newIsAlcoholFree, 1000);
     for (let i = 0; i < favouriteBeer.length; i++) {
         if (favouriteBeer[i] === "Select an option") {
             favouriteBeer[i] = null;
         }
     }
-
     return (favouriteBeer);
 }
 
@@ -225,9 +240,10 @@ function getPreferences(req) {
 }
 
 //8. function to define the Beer object
-function Beer(beerName, beerType, preciseBeerType, beerFlavours, beerABV, beerABVGrade, brewery, beerCountry, beerImage,
+function Beer(beerName, beerLOA, beerType, preciseBeerType, beerFlavours, beerABV, beerABVGrade, brewery, beerCountry, beerImage,
     beerDesc, beerIngredients, beerURL, isVegan, isGF, isLowCal, isAlcoholFree, matchScore) {
     this.beerName = beerName;
+    this.beerLOA = beerLOA;
     this.beerType = beerType;
     this.preciseBeerType = preciseBeerType;
     this.beerFlavours = beerFlavours;
@@ -258,9 +274,7 @@ async function main(favouriteBeer) {
     }
     catch (error) {
         console.error(error);
-    }
-    finally {
-        await client.close();
+
     };
 };
 
@@ -283,9 +297,6 @@ async function getRandom() {
     }
     catch (error) {
         console.error(error);
-    }
-    finally {
-        await client.close();
     };
 };
 
@@ -314,11 +325,14 @@ app.post("/getSimilar", async function (req, res) {
     numberForDivisor = 0;
     let queryName = req.body["similarBox"];
     query = { $and: [{ beerName: queryName }] };
+    if (req.body["avoidAF"]) {
+        avoidAF = true;
+    }
     const result = await client.db("BeerDB").collection("beers").find(query);
 
     if (result) {
         for await (let favouriteBeer of result) {
-            favouriteBeer = new Beer(queryName, favouriteBeer.beerType, favouriteBeer.preciseBeerType,
+            favouriteBeer = new Beer(queryName, favouriteBeer.beerLOA, favouriteBeer.beerType, favouriteBeer.preciseBeerType,
                 favouriteBeer.beerFlavours, favouriteBeer.beerABV, favouriteBeer.beerABVGrade, favouriteBeer.brewery,
                 favouriteBeer.beerCountry, undefined, undefined, favouriteBeer.beerIngredients,
                 undefined, favouriteBeer.isVegan, favouriteBeer.isGF, favouriteBeer.isLowCal,
@@ -339,16 +353,16 @@ app.post("/getSimilar", async function (req, res) {
             for (const [key, value] of Object.entries(favouriteBeer)) {
                 if (key === "beerFlavours") {
                     for (let flavour in value) {
-                        console.log(flavour)
                         numberForDivisor += 1;
+                        favouriteBeerProps.push({ beerFlavour: value[flavour] });
                     }
                 }
-                else if (["beerType", "preciseBeerType", "beerABVGrade", "brewery", "beerCountry",
+                else if (["beerLOA", "beerType", "preciseBeerType", "beerABVGrade", "brewery", "beerCountry",
                     "isVegan", "isGF", "isLowCal", "isAlcoholFree"].includes(key) &&
                     value !== undefined &&
                     value !== null && value !== "") {
-                    console.log(key);
                     numberForDivisor += 1;
+                    favouriteBeerProps.push({ [key]: value });
                 }
             }
             console.log("Divisor: " + numberForDivisor);
@@ -365,22 +379,28 @@ async function findBeers(client, favouriteBeer, requiredItems) {
     sortedMatches = [];
     let potentialMatches = [];
     if (requiredItems.length === 0) {
-        query = { $or: [] };
+        if (avoidAF) {
+            query = { $and: [] };
+            query.$and.push({ isAlcoholFree: "No" });
+        }
+        else {
+            query = { $or: [] };
 
-        // Construct the query object based on favouriteBeer properties.
-        //instead of $or.
-        for (const prop in favouriteBeer) {
-            if (favouriteBeer[prop] !== null && prop !== 'matchScore' && favouriteBeer[prop] !== undefined) {
-                if (prop === "beerFlavours") {
-                    for (let i = 0; i < favouriteBeer.beerFlavours.length; i++) {
-                        let modifiedFlavours = favouriteBeer[prop][i];
-                        query.$or = query.$or || [];
-                        query.$or.push({ [prop]: modifiedFlavours });
+            // Construct the query object based on favouriteBeer properties.
+            //instead of $or.
+            for (const prop in favouriteBeer) {
+                if (favouriteBeer[prop] !== null && prop !== 'matchScore' && favouriteBeer[prop] !== undefined) {
+                    if (prop === "beerFlavours") {
+                        for (let i = 0; i < favouriteBeer.beerFlavours.length; i++) {
+                            let modifiedFlavours = favouriteBeer[prop][i];
+                            query.$or = query.$or || [];
+                            query.$or.push({ [prop]: modifiedFlavours });
+                        }
                     }
-                }
-                else {
-                    query.$or = query.$or || [];
-                    query.$or.push({ [prop]: favouriteBeer[prop] });
+                    else {
+                        query.$or = query.$or || [];
+                        query.$or.push({ [prop]: favouriteBeer[prop] });
+                    }
                 }
             }
         }
@@ -404,6 +424,7 @@ async function findBeers(client, favouriteBeer, requiredItems) {
             }
         }
         query = { $and: queryList };
+
         for (const prop in favouriteBeer) {
             if (favouriteBeer[prop] !== null && prop !== 'matchScore' && favouriteBeer[prop] !== undefined
                 && !queryList.some(item => item.hasOwnProperty(prop))) {
@@ -486,8 +507,6 @@ async function findBeers(client, favouriteBeer, requiredItems) {
             }
 
             doc.matchScore = (doc.matchScore / numberForDivisor * 100).toFixed(2);
-            console.log(doc.beerName);
-            console.log(favouriteBeer.beerName);
             if (doc.matchScore > 100) {
                 doc.matchScore = 99.9;
             }
