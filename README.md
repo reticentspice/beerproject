@@ -11,4 +11,4 @@ Creating the database is obviously the biggest issue and almost certainly why th
 Current major issues:
 
 1. import isn't working on React pages.
-2. matchScores aren't really being calculated correctly, which is fixed with a bandaid solution for now.
+2. The database contains a lot of information, e.g. malts, hops, and allergens, that hasn't yet been reflected in the program. It should be easy to do this by copying and modifying existing code, but I'm sure I'll run into a million as-yet-unforeseen errors in the process.
