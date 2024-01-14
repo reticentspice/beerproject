@@ -100,7 +100,7 @@ const potentialErrors = {
     beerType: "The beer is the wrong type or the type is missing",
     beerFlavours: "The beer has the wrong or missing flavours",
     brewery: "The beer has the wrong brewery",
-    beerCountry: "The beer country is wrong",
+    beerCountry: "The beer isn't from that country or the country is missing",
     beerDescription: "Something's wrong with the beer description",
     beerIngredients: "The beer ingredients are wrong or are missing (and I know what they are)",
     isVegan: "The beer is wrongly marked vegan/not vegan",

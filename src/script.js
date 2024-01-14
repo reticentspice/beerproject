@@ -1,4 +1,6 @@
 
+window.onload = getOptions();
+
 ReactDOM.render(
     <div className="App mx-auto items-center text-center">
         <Header />
@@ -33,9 +35,10 @@ function Header() {
 
 function Tabs() {
     return (<div className="mb-4 border-b border-gray-200 dark:border-gray-700" id="mainTab">
-        <ul className="flex flex-wrap -mb-px text-sm text-white font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+        <ul className="flex flex-wrap -mb-px text-sm text-white font-medium text-center items-center justify-center w-full rounded-lg" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
             <li className="me-2" role="presentation">
-                <button className="inline-block p-4 border-b-2 text-white rounded-t-lg" id="my-beer-tab" data-tabs-target="#myBeer" type="button" role="tab" aria-controls="myBeer" aria-selected="false">Build Custom Beer</button>
+                <button className="inline-block p-4 border-b-2 text-white rounded-t-lg text-blue-600 hover:text-blue-600 
+        dark:text-blue-500 dark:hover:text-blue-400 border-blue-600 dark:border-blue-500" id="my-beer-tab" data-tabs-target="#myBeer" type="button" role="tab" aria-controls="myBeer" aria-selected="false">Build Custom Beer</button>
             </li>
             <li className="me-2" role="presentation">
                 <button className="inline-block p-4 border-b-2 text-white rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="similar-beer-tab" data-tabs-target="#similar" type="button" role="tab" aria-controls="similarBeer" aria-selected="false">Find Similar Beers</button>
@@ -123,19 +126,17 @@ function Form() {
                 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                         <option>Select an option</option>
+                        <option value="amber">Amber</option>
+                        <option value="belgian">Belgian</option>
                         <option value="bock">Bock</option>
-                        <option value="brown ale">Brown ale</option>
-                        <option value="dark ale">Dark ale</option>
+                        <option value="brown">Brown</option>
                         <option value="dark lager">Dark lager</option>
-                        <option value="hybrid">Hybrid</option>
-                        <option value="IPA">IPA</option>
                         <option value="pale ale">Pale ale</option>
                         <option value="pale lager">Pale lager</option>
                         <option value="porter">Porter</option>
                         <option value="sour">Sour</option>
                         <option value="specialty beer">Specialty beer</option>
                         <option value="stout">Stout</option>
-                        <option value="strong ale">Strong ale</option>
                         <option value="wheat beer">Wheat beer</option>
                     </select>
 
@@ -168,7 +169,6 @@ function Form() {
                         <option value="tropical">Tropical</option>
                         <option value="grass">Grass</option>
                         <option value="grapefruit">Grapefruit</option>
-                        <option value="papaya">Papaya</option>
                         <option value="caramel">Caramel</option>
                         <option value="sweet">Sweet</option>
                         <option value="lemon">Lemon</option>
@@ -388,11 +388,93 @@ function RandomDiv() {
 
 function SimilarDiv() {
     return (<div className="hidden p-4 rounded-lg" id="similarBeer" role="tabpanel" aria-labelledby="similar-beer-tab">
-        <label htmlFor="similarBox" className="text-base text-gray-900 italic dark:text-white">Type the name of a beer you
-            love into the box below!</label><br /><br />
-        <input type="text" id="similarBox"></input>
+        <form method="post" action="/getSimilar">
+            <label htmlFor="similarBox" className="text-base text-gray-900 italic dark:text-white">Type the name of a beer you
+                love into the box below!</label><br /><br />
+            <NameSelect /><br /><br />
+            <AvoidAF />
+            <button id="getSimilar" type="submit" value="Submit" className="focus:outline-none text-white 
+        bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm 
+        px-5 py-2.5 me-2 mb-24 dark:bg-green-600 dark:hover:bg-green-700 
+        dark:focus:ring-green-800" disabled>Get recommendations</button>
+        </form>
     </div>)
 }
+
+function AvoidAF() {
+    return (
+        <div>
+            <label htmlFor="avoidAF" className="text-base text-gray-900 italic dark:text-white">Don't match alcohol-free beers   </label>
+            <input type="checkbox" id="avoidAF" name="avoidAF" value="avoidAF" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+                dark:bg-gray-700 dark:border-gray-600" /><br /><br /></div>
+    )
+}
+function addName() {
+    let input = document.getElementById("similarBox");
+    let buttonName = this.innerText;
+    input.value = buttonName;
+    let div = document.getElementById("searchDropdown");
+    let p = div.getElementsByTagName("a");
+    for (let i = 0; i < p.length; i++) {
+        p[i].style.display = "none";
+    }
+    const similarButton = document.getElementById("getSimilar");
+    similarButton.disabled = false;
+}
+
+function getOptions() {
+    fetch('/getArray')
+        .then(response => response.json())
+        .then(data => {
+            // Use the data in the frontend
+
+            const searchArray = data.searchArray;
+            let searchDropdown = document.getElementById("searchDropdown");
+            for (let i = 0; i < searchArray.length; i++) {
+                let searchOption = document.createElement('a');
+                let searchSpace = document.createElement("br");
+                searchOption.onclick = addName;
+                searchOption.textContent = searchArray[i];
+                searchDropdown.appendChild(searchOption);
+                searchOption.appendChild(searchSpace);
+            }
+
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+function NameSelect() {
+
+    function filterFunction() {
+        let filter;
+        let input = document.getElementById("similarBox");
+        let searchDropdown = document.getElementById("searchDropdown");
+        if (input.value) {
+            filter = input.value.toUpperCase();
+        }
+        let div = document.getElementById("searchDropdown");
+        let p = div.getElementsByTagName("a");
+        for (let i = 0; i < p.length; i++) {
+            let txtValue = p[i].textContent || p[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                searchDropdown.style.display = "block";
+                p[i].style.display = "";
+            } else {
+                p[i].style.display = "none";
+            }
+        }
+    }
+
+
+    return (
+        <div className="dropdown">
+            <input type="text" placeholder="Search..." id="similarBox" name="similarBox" onKeyUp={filterFunction}
+                autoComplete="off">
+            </input>
+            <div id="searchDropdown" className="dropdownContent"></div> </div>)
+}
+
 
 document.getElementById("my-beer-tab").addEventListener("click", function () {
     document.getElementById("myBeer").style.display = "block";
@@ -414,6 +496,7 @@ document.getElementById("random-beer-tab").addEventListener("click", function ()
         "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
     document.getElementById("my-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
         "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("my-beer-tab").classList.add("hover:text-gray-600", "hover:border-gray-300", "dark:hover:text-gray-300")
     document.getElementById("similar-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
         "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
 })
@@ -426,6 +509,7 @@ document.getElementById("similar-beer-tab").addEventListener("click", function (
         "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
     document.getElementById("my-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
         "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
+    document.getElementById("my-beer-tab").classList.add("hover:text-gray-600", "hover:border-gray-300", "dark:hover:text-gray-300")
     document.getElementById("random-beer-tab").classList.remove("text-blue-600", "hover:text-blue-600",
         "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
 })
@@ -574,6 +658,11 @@ const beerFlavourDiv2 = document.getElementById("beerFlavourDiv2");
 
 document.addEventListener("click", function (event) {
     const clickedElement = event.target;
+
+    if (clickedElement.id !== "searchDropdown") {
+        document.getElementById("searchDropdown").style.display = "none";
+    }
+
     if (clickedElement.id === "addFlavour1") {
         ReactDOM.render(<FlavourDiv2 />, beerFlavourDiv1);
     }
