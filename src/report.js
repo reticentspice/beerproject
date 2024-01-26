@@ -4,28 +4,52 @@ ReactDOM.render(
     <div className="App mx-auto items-center text-center">
         <Header />
         <main className="flex flex-row">
-            <div className="flex-auto">
+            <HamburgerMenu />
+            <div className="flex-auto p-4">
                 <BeerCard /></div>
-            <div className="flex-auto">
-                <p className="text-base text-gray-900 italic dark:text-white">Which part of the information is wrong?</p>
+            <div className="flex-auto w-2/4">
                 <ReportForm /></div>
         </main></div>, document.getElementById('root')
 )
 
 function Header() {
     return (<header className="App-header">
-        <h2 className="mb-4 text-4xl font-extrabold text-center mx-auto leading-none tracking-tight text-gray-900 md:text-5xl 
-lg:text-6xl dark:text-white bg-green-700">Report Something Wrong</h2>
+        <h2 className="mb-4 text-4xl font-extrabold flex justify-center text-center items-center mx-auto leading-none tracking-tight text-gray-900 md:text-5xl 
+lg:text-6xl dark:text-white bg-green-700 h-20">Report Something Wrong</h2>
+        <button className="w-12 h-12 absolute top-4 left-2" id="hamburgerButton"><img src="hamburger-menu.png" /></button>
     </header>);
+}
+
+
+function HamburgerMenu() {
+    return (<div id="hamburgerMenu" className="hidden absolute left-0 top-20 flex flex-col justify-left text-left 
+    z-10 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+        <ul className="py-2 text-sm text-gray-700 dark:text-gray-400">
+            <li>
+                <a href="/" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Home</a>
+            </li>
+            <li>
+                <a href="/login" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign in or up</a>
+            </li>
+            <li>
+                <a href="/about" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">About DataBeers</a>
+            </li>
+        </ul>
+    </div>)
 }
 
 function ReportForm() {
 
-    return (<form method="post" action="/submitReport" encType="application/x-www-form-urlencoded"><div id="checkBoxContainer">
+    return (<form method="post" action="/submitReport" encType="application/x-www-form-urlencoded"
+        onKeyDown={(e) => { e.key === 'Enter' && e.preventDefault(); }}>
+        <p className="text-base text-gray-900 italic dark:text-white">
+            We try to ensure all the information in our database is as accurate as possible. Unfortunately, due to being only
+            human and therefore often fallible, mistakes do occur. If you've noticed something wrong with one of the beers we've
+            suggested to you, we'd love to have the chance to fix it! Please fill in the fields below and let us know what's
+            wrong and where we should look to find more accurate information.
+        </p>
 
-    </div>
-
-        <label htmlFor="repairsToMake" className="block mb-2 text-sm font-medium text-gray-900 text-base italic dark:text-white">Please describe how we can fix it.</label>
+        <label htmlFor="repairsToMake" className="block mb-2 text-sm font-medium text-gray-900 text-base italic dark:text-white">Please describe what we need to fix.</label>
         <textarea id="repairsToMake" rows="4" className="p-2.5 w-3/4 text-sm text-gray-900 bg-gray-50 rounded-lg border 
 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 
 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -75,64 +99,24 @@ function BeerCard() {
 
     return (<div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 
     dark:border-gray-700 m-0.5">
-        <a href={beerData.beer.beerURL}>
-            <img className="rounded-t-lg object-scale-down w-48 h-48" src={beerData.beer.beerImage ? beerData.beer.beerImage : placeholderImage}
+        <div className="flex flex-row max-w-sm min-w-sm">
+            <img className="rounded-t-lg object-scale-down w-48 h-48 bg-white top-0 left-0" src={beerData.beer.beerImage ? beerData.beer.beerImage : placeholderImage}
                 onError={onImageError} /><br />
-            <div className="p-5">
-                <p className="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-                    target="_blank">{beerData.beer.beerName}</p><br />
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Brewery: {beerData.beer.brewery}</p>
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Type: {beerData.beer.beerType}</p>
-                <p className="mb-4 font-normal text-gray-700 dark:text-gray-400">ABV: {beerData.beer.beerABV}</p>
-                <p className="mb-4 font-normal text-gray-700 dark:text-gray-400">{beerData.beer.beerDesc}</p>
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Gluten free: {beerData.beer.isGF}</p>
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Vegan: {beerData.beer.isVegan}</p>
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Low-calorie: {beerData.beer.isLowCal}</p>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Low-alcohol: {beerData.beer.isAlcoholFree}</p></div></a><br />
+            <div className="p-2">
+                <p className="mb-1 font-normal text-left justify-left text-gray-700 dark:text-gray-400">Brewery: {beerData.beer.brewery}</p>
+                <p className="mb-1 font-normal text-left justify-left text-gray-700 dark:text-gray-400">Type: {beerData.beer.beerType}</p>
+                <p className="mb-4 font-normal text-left justify-left text-gray-700 dark:text-gray-400">ABV: {beerData.beer.beerABV}</p></div></div>
+        <div className="p-5">
+            <p className="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+                target="_blank">{beerData.beer.beerName}</p><br />
+
+            <p className="mb-4 font-normal text-gray-700 dark:text-gray-400">{beerData.beer.beerDesc}</p>
+            <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Gluten free: {beerData.beer.isGF}</p>
+            <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Vegan: {beerData.beer.isVegan}</p>
+            <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">Low-calorie: {beerData.beer.isLowCal}</p>
+            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Low-alcohol: {beerData.beer.isAlcoholFree}</p></div><br />
         <br />
     </div>);
-}
-
-
-
-const potentialErrors = {
-    beerName: "There's a mistake in the beer name", beerImage: "The beer image is wrong or missing",
-    beerType: "The beer is the wrong type or the type is missing",
-    beerFlavours: "The beer has the wrong or missing flavours",
-    brewery: "The beer has the wrong brewery",
-    beerCountry: "The beer isn't from that country or the country is missing",
-    beerDescription: "Something's wrong with the beer description",
-    beerIngredients: "The beer ingredients are wrong or are missing (and I know what they are)",
-    isVegan: "The beer is wrongly marked vegan/not vegan",
-    isGF: "The beer is wrongly marked gluten-free/not gluten-free",
-    isLowCal: "The beer is wrongly marked low-calorie/not low-calorie",
-    isAF: "The beer is wrongly marked alcohol-free/not alcohol-free",
-    other: "Other"
-};
-
-//Loop through the object above and add values below where needed to create all the checkboxes.
-
-const checkboxContainer = document.getElementById("checkBoxContainer");
-
-for (const key in potentialErrors) {
-
-    const newDiv = document.createElement("div");
-    const newCheckbox = React.createElement(FormCheckbox, { checkboxKey: key, label: potentialErrors[key] });
-    ReactDOM.render(newCheckbox, newDiv);
-    checkboxContainer.appendChild(newDiv);
-
-}
-
-function FormCheckbox({ checkboxKey, label }) {
-    return (<div className="formBox flex justify-center items-center mb-2">
-
-        <label htmlFor={checkboxKey} className="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">{label} </label>&nbsp;&nbsp;
-
-        <input type="checkbox" id={checkboxKey} name={checkboxKey} value={checkboxKey}
-            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
-dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
-dark:bg-gray-700 dark:border-gray-600" />
-    </div>)
 }
 
 function ReportButton() {
@@ -142,3 +126,14 @@ function ReportButton() {
         px-5 py-2.5 me-2 mb-24 dark:bg-green-600 dark:hover:bg-green-700 
         dark:focus:ring-green-800">Report error</button>)
 };
+
+document.getElementById("hamburgerButton").addEventListener("click", function () {
+    const hamburgerMenu = document.getElementById("hamburgerMenu");
+    const computedStyle = window.getComputedStyle(hamburgerMenu);
+    if (computedStyle.display === "none") {
+        hamburgerMenu.style.display = "block";
+    }
+    else if (computedStyle.display === "block") {
+        hamburgerMenu.style.display = "none";
+    }
+})

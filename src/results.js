@@ -3,6 +3,41 @@ let favouriteBeer;
 
 window.onload = showBeers();
 
+ReactDOM.render(<div className="w-full">
+    <Header />
+    <HamburgerMenu />
+</div>, document.getElementById("headerRoot"));
+
+function Header() {
+    return (<header className="App-header w-full">
+        <h2 className="mb-6 text-4xl font-extrabold flex justify-center text-center items-center mx-auto leading-none tracking-tight text-white 
+    md:text-5xl lg:text-6xl dark:text-white bg-green-700 w-full h-20">
+            Have a Beer!</h2>
+        <button className="w-12 h-12 absolute top-4 left-2" id="hamburgerButton"><img src="hamburger-menu.png" /></button>
+        <a href="/" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 
+    font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 
+    focus:outline-none dark:focus:ring-blue-800 top-4 right-2 position: absolute">Try another search</a>
+    </header>);
+}
+
+function HamburgerMenu() {
+    return (<div id="hamburgerMenu" className="hidden absolute left-0 top-20 flex flex-col justify-left text-left 
+    z-10 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+        <ul className="py-2 text-sm text-gray-700 dark:text-gray-400">
+            <li>
+                <a href="/" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Home</a>
+            </li>
+            <li>
+                <a href="/login" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign in or up</a>
+            </li>
+            <li>
+                <a href="/about" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">About DataBeers</a>
+            </li>
+        </ul>
+    </div>)
+}
+
+
 function showBeers() {
     const recList = document.getElementById("recommendationList");
     while (recList.firstChild) {
@@ -24,8 +59,7 @@ function showBeers() {
             }
 
             else {
-                const introP = document.getElementById("introP");
-                ReactDOM.render(<IntroParagraph />, introP);
+                ReactDOM.render(<p>Here are some beers we think you'd enjoy...</p>, document.getElementById("introP"));
                 for (let beer of sortedMatches) {
                     const fragment = document.createDocumentFragment();
                     ReactDOM.render(<BeerCard beer={beer} favouriteBeer={favouriteBeer} />, fragment);
@@ -39,10 +73,6 @@ function showBeers() {
         })
         .catch(error => console.error('Error fetching data:', error));
 
-}
-
-function IntroParagraph() {
-    return (<p>Here are some beers we think you'd enjoy...</p>);
 }
 
 function BeerCard({ beer, favouriteBeer }) {
@@ -74,9 +104,8 @@ function BeerCard({ beer, favouriteBeer }) {
         e.target.src = placeholderImage
     }
 
-
     const cardStyle = {
-        backgroundColor: beer.matchScore === "100.00" ? 'green' : 'bg-gray-800'
+        backgroundColor: beer.matchScore === "100.00" ? 'rgba(4, 120, 87, var(--tw-bg-opacity))' : 'bg-gray-800'
     };
 
     //The code below is used for reporting beers with incorrect information.
@@ -87,18 +116,21 @@ function BeerCard({ beer, favouriteBeer }) {
     };
     let beerInfo = JSON.stringify(shortBeer);
 
-    return (<div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 
+    return (<div className="max-w-sm min-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 
     dark:border-gray-700 m-0.5" style={cardStyle}>
         <a href={beer.beerURL}>
-            <img className="rounded-t-lg object-scale-down w-48 h-48" src={beer.beerImage ? beer.beerImage : placeholderImage}
-                onError={onImageError} /><br />
+            <div className="flex flex-row">
+                <img className="rounded-t-lg object-scale-down w-48 h-48 bg-white" src={beer.beerImage ? beer.beerImage : placeholderImage}
+                    onError={onImageError} />
+                <div className="p-2"> <p className="mb-1 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-matchScore`}>Match score: {beer.matchScore}%</p>
+                    <p className="mb-1 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-brewery`}>Brewery: {beer.brewery}</p>
+                    <p className="mb-1 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-beerType`}>Type: {beer.beerType}</p>
+                    <p className="mb-4 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-beerABVGrade`}>ABV: {beer.beerABV}</p></div>
+            </div><br />
             <div className="p-5">
                 <p className="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
                     target="_blank">{beer.beerName}</p><br />
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-matchScore`}>Match score: {beer.matchScore}%</p>
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-brewery`}>Brewery: {beer.brewery}</p>
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-beerType`}>Type: {beer.beerType}</p>
-                <p className="mb-4 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-beerABVGrade`}>ABV: {beer.beerABV}</p>
+
                 <p className="mb-4 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-beerFlavours`}>Flavours: {addSpaces(beer.beerFlavours)}</p>
                 <p className="mb-4 font-normal text-gray-700 dark:text-gray-400">{beer.beerDesc}</p>
                 <p className="mb-4 font-normal text-gray-700 dark:text-gray-400">Ingredients: {addSpaces(beer.beerIngredients)}</p>
@@ -107,7 +139,7 @@ function BeerCard({ beer, favouriteBeer }) {
                 <p className="mb-1 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-isLowCal`}>Low-calorie: {beer.isLowCal}</p>
                 <p className="mb-3 font-normal text-gray-700 dark:text-gray-400" id={`${beer._id}-isAlcoholFree`}>Low-alcohol: {beer.isAlcoholFree}</p></div></a><br />
         <br />
-        <div className="p-5"><a href={`/report?beer=${beerInfo}`} className="reportError">Report incorrect info for {beer.beerName}</a>
+        <div className="p-5"><a href={`/report?beer=${beerInfo}`} className="reportError text-red-600">Report incorrect info for {beer.beerName}</a>
         </div></div>);
 }
 
@@ -116,8 +148,15 @@ function EmptyList() {
 }
 
 function embolden(beer, favouriteBeer) {
+
     if (beer.matchScore === "100.00") {
         document.getElementById(`${beer._id}-matchScore`).style.fontWeight = "bold";
+    }
+
+    for (let i = 0; i < favouriteBeer.length; i++) {
+        if (favouriteBeer[i].hasOwnProperty("beerLOA") && !favouriteBeer[i].hasOwnProperty("beerType")) {
+            favouriteBeer[i].beerType = favouriteBeer[i].beerLOA;
+        }
     }
 
     let matchingFlavours = [];
@@ -134,6 +173,9 @@ function embolden(beer, favouriteBeer) {
 
             else {
                 if (favouriteBeer[i].hasOwnProperty(key) && favouriteBeer[i][key] === value) {
+                    //    if (key == "beerLOA" && !favouriteBeer.beerType) {
+                    //       favouriteBeer[i].beerType = favouriteBeer[i].beerLOA;
+                    //   }
                     const element = document.getElementById(`${beer._id}-${key}`);
                     if (element) {
                         element.classList.remove("font-normal");
@@ -159,7 +201,6 @@ function embolden(beer, favouriteBeer) {
 function hideScore(beer) {
     let element = document.getElementById(`${beer._id}-matchScore`);
     if (element) {
-        console.log("It's alive!");
     }
     if (beer.matchScore === 0) {
         element.style.display = "none";
@@ -168,3 +209,14 @@ function hideScore(beer) {
         return (beer.matchScore);
     }
 }
+
+document.getElementById("hamburgerButton").addEventListener("click", function () {
+    const hamburgerMenu = document.getElementById("hamburgerMenu");
+    const computedStyle = window.getComputedStyle(hamburgerMenu);
+    if (computedStyle.display === "none") {
+        hamburgerMenu.style.display = "block";
+    }
+    else if (computedStyle.display === "block") {
+        hamburgerMenu.style.display = "none";
+    }
+})

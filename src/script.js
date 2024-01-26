@@ -5,15 +5,13 @@ ReactDOM.render(
     <div className="App mx-auto items-center text-center">
         <Header />
         <main>
+            <HamburgerMenu />
             <Tabs />
             <div id="default-tab-content">
                 <div className="p-4 rounded-lg" id="myBeer" role="tabpanel" aria-labelledby="my-beer-tab">
                     <p className="text-base text-gray-900 italic dark:text-white">*Ignore any options you don't care about.</p>
                     <form method="post" action="/submit" encType="application/x-www-form-urlencoded">
                         <Dietary />
-
-
-
                         <Form />
                         <ImportanceSelector />
                         <SubmitButton />
@@ -28,9 +26,27 @@ ReactDOM.render(
 
 function Header() {
     return (<header className="App-header">
-        <h2 className="mb-4 text-4xl font-extrabold text-center mx-auto leading-none tracking-tight text-gray-900 md:text-5xl 
-    lg:text-6xl dark:text-white bg-green-700">Build Your Perfect Beer</h2>
+        <h2 className="mb-4 text-4xl font-extrabold flex justify-center text-center items-center mx-auto leading-none tracking-tight text-gray-900 md:text-5xl 
+    lg:text-6xl dark:text-white bg-green-700 h-20">Build Your Perfect Beer</h2>
+        <button className="w-12 h-12 absolute top-4 left-2 align-bottom" id="hamburgerButton"><img src="hamburger-menu.png" /></button>
     </header>);
+}
+
+function HamburgerMenu() {
+    return (<div id="hamburgerMenu" className="hidden absolute left-0 top-20 flex flex-col justify-left text-left 
+    z-10 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+        <ul className="py-2 text-sm text-gray-700 dark:text-gray-400">
+            <li>
+                <a href="/" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Home</a>
+            </li>
+            <li>
+                <a href="/login" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign in or up</a>
+            </li>
+            <li>
+                <a href="/about" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">About DataBeers</a>
+            </li>
+        </ul>
+    </div>)
 }
 
 function Tabs() {
@@ -61,43 +77,71 @@ function Dietary() {
             hover:bg-blue-100 dark:hover:bg-gray-700 gap-3">
 
                     <summary className="text-xl font-bold dark:text-white text-center mx-auto list-none cursor-pointer">Dietary requirements</summary><br />
+                    <div className="flex flex-row justify-center">
+                        <div className="flex flex-col justify-start items-start p-4">
+                            <div className="dietaryDiv flex justify-center items-center mb-4">
 
-                    <div className="dietaryDiv flex justify-center items-center mb-4">
+                                <label htmlFor="vegan" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Vegan </label>&nbsp;&nbsp;
 
-                        <label htmlFor="vegan" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Vegan </label>&nbsp;&nbsp;
-
-                        <input type="checkbox" id="vegan" name="vegan" value="isVegan"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                                <input type="checkbox" id="vegan" name="vegan" value="isVegan"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
                 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
                 dark:bg-gray-700 dark:border-gray-600" />
-                    </div>
+                            </div>
 
-                    <div className="dietaryDiv flex justify-center items-center mb-4">
+                            <div className="dietaryDiv flex justify-center items-center mb-4">
 
-                        <label htmlFor="glutenFree" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Gluten-free </label>&nbsp;&nbsp;
+                                <label htmlFor="glutenFree" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Gluten-free </label>&nbsp;&nbsp;
 
-                        <input type="checkbox" id="glutenFree" name="glutenFree" value="isGF"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                                <input type="checkbox" id="glutenFree" name="glutenFree" value="isGF"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+                dark:bg-gray-700 dark:border-gray-600" />
+                            </div>
+
+                            <div className="dietaryDiv flex justify-center items-center mb-4">
+
+                                <label htmlFor="lowCal" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Low-calorie </label>&nbsp;&nbsp;
+
+                                <input type="checkbox" name="lowCal" id="lowCal" value="isLowCal"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
                 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
                 dark:bg-gray-700 dark:border-gray-600" /></div>
 
-                    <div className="dietaryDiv flex justify-center items-center mb-4">
+                            <div className="dietaryDiv flex justify-center items-center mb-4">
 
-                        <label htmlFor="lowCal" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Low-calorie </label>&nbsp;&nbsp;
+                                <label htmlFor="alcoholFree" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Alcohol-free </label>&nbsp;&nbsp;
 
-                        <input type="checkbox" name="lowCal" id="lowCal" value="isLowCal"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
-                dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
-                dark:bg-gray-700 dark:border-gray-600" /></div>
-
-                    <div className="dietaryDiv flex justify-center items-center mb-4">
-
-                        <label htmlFor="alcoholFree" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Alcohol-free </label>&nbsp;&nbsp;
-
-                        <input type="checkbox" name="alcoholFree" id="alcoholFree" value="isAlcoholFree"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                                <input type="checkbox" name="alcoholFree" id="alcoholFree" value="isAlcoholFree"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
 dark:bg-gray-700 dark:border-gray-600" /></div>
+                        </div><div className="flex flex-col justify-start items-start p-4">
+                            <div className="dietaryDiv flex justify-center items-center mb-4">
+
+                                <label htmlFor="noWheat" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No wheat </label>&nbsp;&nbsp;
+
+                                <input type="checkbox" name="noWheat" id="noWheat" value="isWheatFree"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+dark:bg-gray-700 dark:border-gray-600" /></div>
+                            <div className="dietaryDiv flex justify-center items-center mb-4">
+
+                                <label htmlFor="noOats" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No oats </label>&nbsp;&nbsp;
+
+                                <input type="checkbox" name="noOats" id="noOats" value="isOatFree"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+dark:bg-gray-700 dark:border-gray-600" /></div>
+                            <div className="dietaryDiv flex justify-center items-center mb-4">
+
+                                <label htmlFor="noLactose" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No lactose </label>&nbsp;&nbsp;
+
+                                <input type="checkbox" name="noLactose" id="noLactose" value="isLactoseFree"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+dark:bg-gray-700 dark:border-gray-600" /></div>
+                        </div></div>
                 </details>
             </div>
         </div>
@@ -126,11 +170,15 @@ function Form() {
                 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                         <option>Select an option</option>
-                        <option value="amber">Amber</option>
-                        <option value="belgian">Belgian</option>
+                        <option value="ale">Ale</option>
+                        <option value="amber ale">Amber</option>
+                        <option value="belgian ale">Belgian</option>
                         <option value="bock">Bock</option>
-                        <option value="brown">Brown</option>
+                        <option value="brown ale">Brown</option>
+                        <option value="dark ale">Dark ale</option>
+                        <option value="lager">Lager</option>
                         <option value="dark lager">Dark lager</option>
+                        <option value="mild">Mild</option>
                         <option value="pale ale">Pale ale</option>
                         <option value="pale lager">Pale lager</option>
                         <option value="porter">Porter</option>
@@ -153,27 +201,7 @@ function Form() {
 
                     <label htmlFor="beerFlavours" className="block mb-2 leading-relaxed text-sm font-medium text-gray-900 dark:text-white">Beer flavour: </label>
 
-                    <select id="beerFlavours" name="beerFlavours" className="propertyToAdd
-                bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
-                focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
-                dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option>Select an option</option>
-                        <option value="bitter">Bitter</option>
-                        <option value="chocolate">Chocolate</option>
-                        <option value="citrus">Citrus</option>
-                        <option value="coffee">Coffee</option>
-                        <option value="fruit">Fruit</option>
-                        <option value="malt">Malt</option>
-                        <option value="peat">Peat</option>
-                        <option value="tropical">Tropical</option>
-                        <option value="grass">Grass</option>
-                        <option value="grapefruit">Grapefruit</option>
-                        <option value="caramel">Caramel</option>
-                        <option value="sweet">Sweet</option>
-                        <option value="lemon">Lemon</option>
-                        <option value="zesty">Zesty</option>
-                    </select>
+                    <FlavourSelector flavourNumber={1} />
 
                     <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
 
@@ -190,6 +218,50 @@ function Form() {
 
                 <div id="beerFlavourDiv1"></div>
                 <div id="beerFlavourDiv2"></div>
+
+                <div id="beerHopsDiv" className="max-w-sm mx-auto">
+
+                    <label htmlFor="beerHops1" className="block mb-2 leading-relaxed text-sm font-medium text-gray-900 dark:text-white">Hops variety: </label>
+
+                    <HopSelector hopsNumber={1} />
+
+                    <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
+
+                    <input type="checkbox" value="required" name="beerHopReq"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+dark:bg-gray-700 dark:border-gray-600 requiredCheck" /><br />
+
+                    <button id="addHops1" type="button" className="text-gray-900 bg-white border border-gray-300 
+focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg 
+text-sm px-5 py-2.5 me-2 my-2 dark:bg-purple-500 dark:text-white dark:border-gray-600 
+dark:hover:bg-purple-400 dark:hover:border-gray-600 dark:focus:ring-gray-700">Add another hops variety</button><br /><br />
+                </div>
+
+                <div id="beerHopsDiv1"></div>
+                <div id="beerHopsDiv2"></div>
+
+                <div id="beerMaltDiv" className="max-w-sm mx-auto">
+
+                    <label htmlFor="beerMalts" className="block mb-2 leading-relaxed text-sm font-medium text-gray-900 dark:text-white">Malt: </label>
+
+                    <MaltSelector maltNumber={1} />
+
+                    <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
+
+                    <input type="checkbox" value="required" name="beerMaltReq"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+dark:bg-gray-700 dark:border-gray-600 requiredCheck" /><br />
+
+                    <button id="addMalt1" type="button" className="text-gray-900 bg-white border border-gray-300 
+focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg 
+text-sm px-5 py-2.5 me-2 my-2 dark:bg-purple-500 dark:text-white dark:border-gray-600 
+dark:hover:bg-purple-400 dark:hover:border-gray-600 dark:focus:ring-gray-700">Add another malt</button><br /><br />
+                </div>
+
+                <div id="beerMaltsDiv1"></div>
+                <div id="beerMaltsDiv2"></div>
 
 
                 <div id="beerABVDiv" className="max-w-sm mx-auto">
@@ -245,24 +317,11 @@ function Form() {
 };
 
 function FlavourDiv2() {
-    return (<div id="beerFlavourDiv2" className="max-w-sm mx-auto">
+    return (<div id="flavourDiv2" className="max-w-sm mx-auto">
 
         <label htmlFor="beerFlavours2" className="block leading-relaxed mb-2 text-sm font-medium text-gray-900 dark:text-white">Beer flavour: </label>
 
-        <select id="beerFlavours2" name="beerFlavours2" className="propertyToAdd
-                bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
-                focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
-                dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-            <option>Select an option</option>
-            <option value="bitter">Bitter</option>
-            <option value="chocolate">Chocolate</option>
-            <option value="citrus">Citrus</option>
-            <option value="coffee">Coffee</option>
-            <option value="fruit">Fruit</option>
-            <option value="malty">Malty</option>
-            <option value="peaty">Peaty</option>
-        </select>
+        <FlavourSelector flavourNumber={2} />
 
         <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
 
@@ -279,24 +338,11 @@ function FlavourDiv2() {
 }
 
 function FlavourDiv3() {
-    return (<div id="beerFlavourDiv3" className="max-w-sm mx-auto">
+    return (<div id="flavourDiv3" className="max-w-sm mx-auto">
 
         <label htmlFor="beerFlavours3" className="block leading-relaxed mb-2 text-sm font-medium text-gray-900 dark:text-white">Beer flavour: </label>
 
-        <select id="beerFlavours3" name="beerFlavours3" className="propertyToAdd
-                bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
-                focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
-                dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-            <option>Select an option</option>
-            <option value="bitter">Bitter</option>
-            <option value="chocolate">Chocolate</option>
-            <option value="citrus">Citrus</option>
-            <option value="coffee">Coffee</option>
-            <option value="fruit">Fruit</option>
-            <option value="malty">Malty</option>
-            <option value="peaty">Peaty</option>
-        </select>
+        <FlavourSelector flavourNumber={3} />
 
         <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
 
@@ -307,6 +353,210 @@ function FlavourDiv3() {
     </div>);
 }
 
+function HopsDiv2() {
+    return (<div id="hopsDiv2" className="max-w-sm mx-auto">
+
+        <label htmlFor="beerHops2" className="block leading-relaxed mb-2 text-sm font-medium text-gray-900 dark:text-white">Hops variety: </label>
+
+        <HopSelector hopsNumber={2} />
+
+        <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
+
+        <input type="checkbox" value="required" name="beerHops2Req"
+            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+                dark:bg-gray-700 dark:border-gray-600" /><br />
+
+        <button id="addHops2" type="button" className="text-gray-900 bg-white border border-gray-300 
+            focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg 
+            text-sm px-5 py-2.5 me-2 my-2 dark:bg-purple-500 dark:text-white dark:border-gray-600 
+            dark:hover:bg-purple-400 dark:hover:border-gray-600 dark:focus:ring-gray-700">Add another hops variety</button><br /><br />
+    </div>)
+}
+
+function HopsDiv3() {
+    return (<div id="hopsDiv3" className="max-w-sm mx-auto">
+
+        <label htmlFor="beerHops3" className="block leading-relaxed mb-2 text-sm font-medium text-gray-900 dark:text-white">Hops variety: </label>
+
+        <HopSelector hopsNumber={3} />
+
+        <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
+
+        <input type="checkbox" value="required" name="beerHops3Req"
+            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+                dark:bg-gray-700 dark:border-gray-600" /><br /><br />
+    </div>);
+}
+
+function MaltDiv2() {
+    return (<div id="maltDiv2" className="max-w-sm mx-auto">
+
+        <label htmlFor="beerMalts2" className="block leading-relaxed mb-2 text-sm font-medium text-gray-900 dark:text-white">Malt: </label>
+
+        <MaltSelector maltNumber={2} />
+
+        <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
+
+        <input type="checkbox" value="required" name="beerMalt2Req"
+            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+                dark:bg-gray-700 dark:border-gray-600" /><br />
+
+        <button id="addMalt2" type="button" className="text-gray-900 bg-white border border-gray-300 
+            focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg 
+            text-sm px-5 py-2.5 me-2 my-2 dark:bg-purple-500 dark:text-white dark:border-gray-600 
+            dark:hover:bg-purple-400 dark:hover:border-gray-600 dark:focus:ring-gray-700">Add another malt</button><br /><br />
+    </div>)
+}
+
+function MaltDiv3() {
+    return (<div id="maltDiv3" className="max-w-sm mx-auto">
+
+        <label htmlFor="beerMalts3" className="block leading-relaxed mb-2 text-sm font-medium text-gray-900 dark:text-white">Malt: </label>
+
+        <MaltSelector maltNumber={3} />
+
+        <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Required </label>&nbsp;&nbsp;
+
+        <input type="checkbox" value="required" name="beerMalt3Req"
+            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+                dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
+                dark:bg-gray-700 dark:border-gray-600" /><br /><br />
+    </div>);
+}
+
+function FlavourSelector({ flavourNumber }) {
+    return (<select
+        id={`beerFlavours${flavourNumber}`}
+        name={`beerFlavours${flavourNumber}`}
+        className="propertyToAdd
+    bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+    focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
+    dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    >
+        <option>Select an option</option>
+        <option value="balanced">Balanced</option>
+        <option value="biscuit">Biscuity</option>
+        <option value="bitter">Bitter</option>
+        <option value="caramel">Caramel</option>
+        <option value="chocolate">Chocolate</option>
+        <option value="citrus">Citrus</option>
+        <option value="coffee">Coffee</option>
+        <option value="crisp">Crisp</option>
+        <option value="dry">Dry</option>
+        <option value="floral">Floral</option>
+        <option value="fruit">Fruity</option>
+        <option value="full-bodied">Full-bodied</option>
+        <option value="grapefruit">Grapefruit</option>
+        <option value="herbal">Herbal</option>
+        <option value="hops">Hoppy</option>
+        <option value="lemon">Lemon</option>
+        <option value="malt">Malty</option>
+        <option value="mango">Mango</option>
+        <option value="orange">Orange</option>
+        <option value="peach">Peach</option>
+        <option value="pine">Pine</option>
+        <option value="pineapple">Pineapple</option>
+        <option value="rich">Rich</option>
+        <option value="roasted">Roasted</option>
+        <option value="spicy">Spicy</option>
+        <option value="sweet">Sweet</option>
+        <option value="toffee">Toffee</option>
+        <option value="tropical">Tropical</option>
+        <option value="vanilla">Vanilla</option>
+        <option value="zesty">Zesty</option>
+    </select>
+    );
+}
+
+function HopSelector({ hopsNumber }) {
+    return (<select
+        id={`beerHops${hopsNumber}`}
+        name={`beerHops${hopsNumber}`}
+        className="propertyToAdd
+        bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+        focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
+        dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    >
+        <option>Select an option</option>
+        <option value="Admiral">Admiral</option>
+        <option value="Ahtanum">Ahtanum</option>
+        <option value="Amarillo">Amarillo</option>
+        <option value="Azacca">Azacca</option>
+        <option value="Bramling Cross">Bramling Cross</option>
+        <option value="Cascade">Cascade</option>
+        <option value="Celeia">Celeia</option>
+        <option value="Centennial">Centennial</option>
+        <option value="Challenger">Challenger</option>
+        <option value="Chinook">Chinook</option>
+        <option value="Citra">Citra</option>
+        <option value="Columbus">Columbus</option>
+        <option value="Ekuanot">Ekuanot</option>
+        <option value="El Dorado">El Dorado</option>
+        <option value="First Gold">First Gold</option>
+        <option value="Fuggles">Fuggles</option>
+        <option value="Galaxy">Galaxy</option>
+        <option value="Golding">Golding</option>
+        <option value="Herkules">Herkules</option>
+        <option value="Idaho 7">Idaho 7</option>
+        <option value="Magnum">Magnum</option>
+        <option value="Mosaic">Mosaic</option>
+        <option value="Perle">Perle</option>
+        <option value="Pilgrim">Pilgrim</option>
+        <option value="Nelson Sauvin">Nelson Sauvin</option>
+        <option value="Saaz">Saaz</option>
+        <option value="Sabro">Sabro</option>
+        <option value="Simcoe">Simcoe</option>
+        <option value="Target">Target</option>
+        <option value="Willamette">Willamette</option>
+    </select>
+    );
+}
+
+function MaltSelector({ maltNumber }) {
+    return (<select
+        id={`beerMalts${maltNumber}`}
+        name={`beerMalts${maltNumber}`}
+        className="propertyToAdd
+            bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+            focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
+            dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    >
+        <option>Select an option</option>
+        <option value="Amber">Amber</option>
+        <option value="Black">Black</option>
+        <option value="Brown">Brown</option>
+        <option value="Cara">Cara</option>
+        <option value="Caramalt">Caramalt</option>
+        <option value="Carapils">Carapils</option>
+        <option value="Chocolate">Chocolate</option>
+        <option value="Crystal">Crystal</option>
+        <option value="Dark Crystal">Dark Crystal</option>
+        <option value="Dextrin">Dextrin</option>
+        <option value="Extra Pale">Extra Pale</option>
+        <option value="Golden Naked Oats">Golden Naked Oats</option>
+        <option value="Jumbo Oats">Jumbo Oats</option>
+        <option value="Low Colour Maris Otter">Low Colour Maris Otter</option>
+        <option value="Maris Otter">Maris Otter</option>
+        <option value="Malted Barley">Malted Barley</option>
+        <option value="Malted Oats">Malted Oats</option>
+        <option value="Malted Wheat">Malted Wheat</option>
+        <option value="Munich">Munich</option>
+        <option value="Oats">Oats</option>
+        <option value="Pale">Pale</option>
+        <option value="Pale Ale">Pale Ale</option>
+        <option value="Pale Crystal">Pale Crystal</option>
+        <option value="Pilsner">Pilsner</option>
+        <option value="Roasted Barley">Roasted Barley</option>
+        <option value="Torrefied Wheat">Torrefied Wheat</option>
+        <option value="Vienna">Vienna</option>
+        <option value="Wheat">Wheat</option>
+    </select>
+    );
+
+}
 
 function ImportanceSelector() {
     return (
@@ -380,6 +630,7 @@ function SubmitButton() {
 function RandomDiv() {
     return (<div className="hidden p-4 rounded-lg" id="randomBeer" role="tabpanel" aria-labelledby="random-beer-tab">
         <form method="post" action="/getRandom">
+            <AvoidAF />
             <button id="getRandom" type="submit" value="Submit" className="focus:outline-none text-white 
         bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm 
         px-5 py-2.5 me-2 mt-4 mb-4 dark:bg-green-600 dark:hover:bg-green-700 
@@ -404,8 +655,8 @@ function SimilarDiv() {
 function AvoidAF() {
     return (
         <div>
-            <label htmlFor="avoidAF" className="text-base text-gray-900 italic dark:text-white">Don't match alcohol-free beers   </label>
-            <input type="checkbox" id="avoidAF" name="avoidAF" value="avoidAF" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
+            <label htmlFor="dontAvoidAF" className="text-base text-gray-900 italic dark:text-white">Include alcohol-free beers   </label>
+            <input type="checkbox" id="dontAvoidAF" name="dontAvoidAF" value="dontAvoidAF" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 
                 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 
                 dark:bg-gray-700 dark:border-gray-600" /><br /><br /></div>
     )
@@ -514,149 +765,79 @@ document.getElementById("similar-beer-tab").addEventListener("click", function (
         "dark:text-blue-500", "dark:hover:text-blue-400", "border-blue-600", "dark:border-blue-500");
 })
 
+document.getElementById("hamburgerButton").addEventListener("click", function () {
+    const hamburgerMenu = document.getElementById("hamburgerMenu");
+    const computedStyle = window.getComputedStyle(hamburgerMenu);
+    if (computedStyle.display === "none") {
+        hamburgerMenu.style.display = "block";
+    }
+    else if (computedStyle.display === "block") {
+        hamburgerMenu.style.display = "none";
+    }
+})
+
 let optionsList = [];
-let previousType;
-let previousFlavour1;
-let previousFlavour2;
-let previousFlavour3;
-let previousABVGrade;
-let previousCountry;
 
-let beerTypeOption;
-let beerFlavoursOption;
-let beerFlavours2Option;
-let beerFlavours3Option;
-let beerABVGradeOption;
-let beerCountryOption;
+const optionsLists = ["firstOptionsList", "secondOptionsList", "thirdOptionsList"];
+let selectedOptions = [];
 
-$("#beerType").on("change", function () {
+const selectsToCheck = ["beerType", "beerABVGrade", "beerCountry", "beerFlavours1", "beerFlavours2", "beerFlavours3",
+    "beerHops1", "beerHops2", "beerHops3", "beerMalts1", "beerMalts2", "beerMalts3"];
 
-    if (previousType !== undefined) {
-        $("#firstOptionsList option[value='" + previousType + "']").remove();
-        $("#secondOptionsList option[value='" + previousType + "']").remove();
-        $("#thirdOptionsList option[value='" + previousType + "']").remove();
-        var index = optionsList.indexOf(beerTypeOption);
-        if (index > -1) {
-            optionsList.splice(index, 1);
+for (let j = 0; j < optionsLists.length; j++) {
+    let optionInQuestion = document.getElementById(optionsLists[j]);
+    optionInQuestion.addEventListener("click", function () {
+        let innerOptionsList = [];
+        if (optionInQuestion) {
+            for (let k = 0; k < optionInQuestion.options.length; k++) {
+                innerOptionsList.push(optionInQuestion.options[k].value);
+            }
         }
-    }
-    beerTypeOption = '<option value="' + $("#beerType").val() + '">' + $("#beerType option:selected").text() + '</option>';
-    $("#firstOptionsList").append($(beerTypeOption));
-    $("#secondOptionsList").append($(beerTypeOption));
-    $("#thirdOptionsList").append($(beerTypeOption));
-    optionsList.push(beerTypeOption);
-    previousType = $("#beerType").val();
-})
 
-
-$("#beerFlavours").on("change", function () {
-    if (previousFlavour1 !== undefined) {
-        $("#firstOptionsList option[value='" + previousFlavour1 + "']").remove();
-        $("#secondOptionsList option[value='" + previousFlavour1 + "']").remove();
-        $("#thirdOptionsList option[value='" + previousFlavour1 + "']").remove();
-        var index = optionsList.indexOf(beerFlavoursOption);
-        if (index > -1) {
-            optionsList.splice(index, 1);
+        for (let i = 0; i < selectsToCheck.length; i++) {
+            let checkedSelect = document.getElementById(selectsToCheck[i]);
+            if (checkedSelect && checkedSelect.value && checkedSelect.value !== "Select an option") {
+                let valueToAdd = checkedSelect.value;
+                let siblingCheckbox = checkedSelect.nextSibling;
+                siblingCheckbox = siblingCheckbox.nextSibling;
+                siblingCheckbox = siblingCheckbox.nextElementSibling;
+                console.log(siblingCheckbox);
+                let isChecked = siblingCheckbox && siblingCheckbox.checked;
+                console.log(isChecked);
+                if (!innerOptionsList.includes(valueToAdd) && !selectedOptions.includes(valueToAdd) && !isChecked) {
+                    var newOption = document.createElement("option");
+                    newOption.value = valueToAdd;
+                    newOption.text = valueToAdd;
+                    document.getElementById(optionsLists[j]).append(newOption);
+                }
+            }
         }
+    });
+
+    optionInQuestion.addEventListener("change", function () {
+        console.log("Changed");
+        let valueToAdd = optionInQuestion.value;
+        selectedOptions.push(valueToAdd);
+    })
+}
+
+for (let i = 0; i < selectsToCheck.length; i++) {
+    if (document.getElementById(selectsToCheck[i])) {
+        document.getElementById(selectsToCheck[i]).addEventListener("change", function () {
+            resetImportanceLists();
+            selectedOptions = [];
+        })
     }
-    beerFlavoursOption = '<option value="' + $("#beerFlavours").val() + '">' + $("#beerFlavours option:selected").text() + '</option>';
-    $("#firstOptionsList").append($(beerFlavoursOption));
-    $("#secondOptionsList").append($(beerFlavoursOption));
-    $("#thirdOptionsList").append($(beerFlavoursOption));
-    optionsList.push(beerFlavoursOption);
-    previousFlavour1 = $("#beerFlavours").val();
-})
-
-$(document).on("change", "#beerFlavours2", function () {
-    if (previousFlavour2 !== undefined) {
-        $("#firstOptionsList option[value='" + previousFlavour2 + "']").remove();
-        $("#secondOptionsList option[value='" + previousFlavour2 + "']").remove();
-        $("#thirdOptionsList option[value='" + previousFlavour2 + "']").remove();
-        var index = optionsList.indexOf(beerFlavours2Option);
-        if (index > -1) {
-            optionsList.splice(index, 1);
-        }
-    }
-    beerFlavours2Option = '<option value="' + $("#beerFlavours2").val() + '">' + $("#beerFlavours2 option:selected").text() + '</option>';
-    $("#firstOptionsList").append($(beerFlavours2Option));
-    $("#secondOptionsList").append($(beerFlavours2Option));
-    $("#thirdOptionsList").append($(beerFlavours2Option));
-    optionsList.push(beerFlavours2Option);
-    previousFlavour2 = $("#beerFlavours2").val();
-})
-
-$(document).on("change", "#beerFlavours3", function () {
-    if (previousFlavour3 !== undefined) {
-        $("#firstOptionsList option[value='" + previousFlavour3 + "']").remove();
-        $("#secondOptionsList option[value='" + previousFlavour3 + "']").remove();
-        $("#thirdOptionsList option[value='" + previousFlavour3 + "']").remove();
-        var index = optionsList.indexOf(beerFlavours3Option);
-        if (index > -1) {
-            optionsList.splice(index, 1);
-        }
-    }
-    beerFlavours3Option = '<option value="' + $("#beerFlavours3").val() + '">' + $("#beerFlavours3 option:selected").text() + '</option>';
-    $("#firstOptionsList").append($(beerFlavours3Option));
-    $("#secondOptionsList").append($(beerFlavours3Option));
-    $("#thirdOptionsList").append($(beerFlavours3Option));
-    optionsList.push(beerFlavours3Option);
-    previousFlavour3 = $("#beerFlavours3").val();
-})
-
-$("#beerABVGrade").on("change", function () {
-    if (previousABVGrade !== undefined) {
-        $("#firstOptionsList option[value='" + previousABVGrade + "']").remove();
-        $("#secondOptionsList option[value='" + previousABVGrade + "']").remove();
-        $("#thirdOptionsList option[value='" + previousABVGrade + "']").remove();
-        var index = optionsList.indexOf(beerABVGradeOption);
-        if (index > -1) {
-            optionsList.splice(index, 1);
-        }
-    }
-    beerABVGradeOption = '<option value="' + $("#beerABVGrade").val() + '">' + $("#beerABVGrade option:selected").text() + '</option>';
-    $("#firstOptionsList").append($(beerABVGradeOption));
-    $("#secondOptionsList").append($(beerABVGradeOption));
-    $("#thirdOptionsList").append($(beerABVGradeOption));
-    optionsList.push(beerABVGradeOption);
-    previousABVGrade = $("#beerABVGrade").val();
-})
-
-$("#beerCountry").on("change", function () {
-    if (previousCountry !== undefined) {
-        $("#firstOptionsList option[value='" + previousCountry + "']").remove();
-        $("#secondOptionsList option[value='" + previousCountry + "']").remove();
-        $("#thirdOptionsList option[value='" + previousCountry + "']").remove();
-        var index = optionsList.indexOf(beerCountryOption);
-        if (index > -1) {
-            optionsList.splice(index, 1);
-        }
-    }
-    beerCountryOption = '<option value="' + $("#beerCountry").val() + '">' + $("#beerCountry option:selected").text() + '</option>';
-    $("#firstOptionsList").append($(beerCountryOption));
-    $("#secondOptionsList").append($(beerCountryOption));
-    $("#thirdOptionsList").append($(beerCountryOption));
-    optionsList.push(beerCountryOption);
-    previousCountry = $("#beerCountry").val();
-})
-
-$("#firstOptionsList").on("change", function () {
-    let firstOption = $("#firstOptionsList option:selected").val();
-    let secondOptionsList = $("#secondOptionsList");
-    let thirdOptionsList = $("#thirdOptionsList");
-    secondOptionsList.find('option[value="' + firstOption + '"]').remove();
-    thirdOptionsList.find('option[value="' + firstOption + '"]').remove();
-})
-
-$("#secondOptionsList").on("change", function () {
-    let secondOption = $("#secondOptionsList option:selected").val();
-    let thirdOptionsList = $("#thirdOptionsList");
-    thirdOptionsList.find('option[value="' + secondOption + '"]').remove();
-})
-
-const beerFlavourDiv1 = document.getElementById("beerFlavourDiv1");
-const beerFlavourDiv2 = document.getElementById("beerFlavourDiv2");
+}
 
 document.addEventListener("click", function (event) {
+    const beerFlavourDiv1 = document.getElementById("beerFlavourDiv1");
+    const beerFlavourDiv2 = document.getElementById("beerFlavourDiv2");
+    const beerHopsDiv1 = document.getElementById("beerHopsDiv1");
+    const beerHopsDiv2 = document.getElementById("beerHopsDiv2");
+    const beerMaltsDiv1 = document.getElementById("beerMaltsDiv1");
+    const beerMaltsDiv2 = document.getElementById("beerMaltsDiv2");
+
     const clickedElement = event.target;
 
     if (clickedElement.id !== "searchDropdown") {
@@ -667,35 +848,50 @@ document.addEventListener("click", function (event) {
         ReactDOM.render(<FlavourDiv2 />, beerFlavourDiv1);
     }
 
-    // Check if the clicked element has the ID "addFlavour1"
     if (clickedElement.id === "addFlavour2") {
         ReactDOM.render(<FlavourDiv3 />, beerFlavourDiv2);
     }
 
+    if (clickedElement.id === "addHops1") {
+        ReactDOM.render(<HopsDiv2 />, beerHopsDiv1);
+    }
+
+    if (clickedElement.id === "addHops2") {
+        ReactDOM.render(<HopsDiv3 />, beerHopsDiv2);
+    }
+
+    if (clickedElement.id === "addMalt1") {
+        ReactDOM.render(<MaltDiv2 />, beerMaltsDiv1);
+    }
+
+    if (clickedElement.id === "addMalt2") {
+        ReactDOM.render(<MaltDiv3 />, beerMaltsDiv2);
+    }
+
     if (clickedElement.id === "resetImportant") {
-        $("#firstOptionsList option").remove();
-        $("#secondOptionsList option").remove();
-        $("#thirdOptionsList option").remove();
-        for (let i = 0; i < optionsList.length; i++) {
-            $("#firstOptionsList").append(optionsList[i]);
-            $("#secondOptionsList").append(optionsList[i]);
-            $("#thirdOptionsList").append(optionsList[i]);
-        }
+        resetImportanceLists();
     }
 });
 
-$(".requiredCheck").change(function () {
-    if ($(this).is(":checked")) {
-        let itemToRemove = $(this).siblings("select").val();
-        $("#firstOptionsList option[value='" + itemToRemove + "']").remove();
-        $("#secondOptionsList option[value='" + itemToRemove + "']").remove();
-        $("#thirdOptionsList option[value='" + itemToRemove + "']").remove();
-    }
-    else {
-        let itemToAdd = '<option value="' + $(this).siblings("select").val() + '">' +
-            $(this).siblings("select").find(":selected").text() + '</option>';
-        $("#firstOptionsList").append(itemToAdd);
-        $("#secondOptionsList").append(itemToAdd);
-        $("#thirdOptionsList").append(itemToAdd);
-    }
-})
+
+Array.from(document.getElementsByClassName("requiredCheck")).forEach(function (element) {
+    element.addEventListener("change", function () {
+        resetImportanceLists();
+    });
+});
+
+function resetImportanceLists() {
+    document.getElementById("firstOptionsList").innerHTML = "";
+    document.getElementById("secondOptionsList").innerHTML = "";
+    document.getElementById("thirdOptionsList").innerHTML = "";
+
+    var dontCareOption = document.createElement("option");
+    dontCareOption.value = "dontCare";
+    dontCareOption.text = "Nothing in particular";
+    document.getElementById("firstOptionsList").appendChild(dontCareOption.cloneNode(true));
+    document.getElementById("secondOptionsList").appendChild(dontCareOption.cloneNode(true));
+    document.getElementById("thirdOptionsList").appendChild(dontCareOption.cloneNode(true));
+
+    selectedOptions = [];
+}
+
