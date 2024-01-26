@@ -44,6 +44,22 @@ app.get('/report', (req, res) => {
     res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\report.html");
 });
 
+app.get('/about', (req, res) => {
+    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\about.html");
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\login.html");
+});
+
+app.get('/signIn', (req, res) => {
+    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\index.html");
+});
+
+app.get('/signUp', (req, res) => {
+    res.sendFile("C:\\Users\\User\\Documents\\Python\\BeerProject\\beer-project\\public\\signupresult.html");
+});
+
 app.get('/getMatches', (req, res) => {
     res.json({
         sortedMatches: sortedMatches,
@@ -69,19 +85,23 @@ let notSoImportant;
 let numberForDivisor;
 let sortedMatches;
 let favouriteBeerProps = [];
-let avoidAF = false;
+let avoidAF = true;
 
 //5. getInfo function to collect input from the form
 function getInfo(req) {
     numberForDivisor = 0;
-    let newBeerFlavours = [];
     let newBeerLOA = null;
     let newBeerType = null;
     let newPreciseBeerType = null;
+    let newReallyPreciseBeerType = null;
+    let newBeerFlavours = [];
     let newBeerABVGrade = null;
     let newBrewery = null;
     let newBeerCountry = null;
     let newIngredients = null;
+    let newBeerHops = [];
+    let newBeerMalts = [];
+    let newBeerAllergens = [];
     let newIsVegan = null;
     let newIsGF = null;
     let newIsLowCal = null;
@@ -90,51 +110,59 @@ function getInfo(req) {
     if (req.body.vegan === "isVegan") {
         newIsVegan = "Yes";
         favouriteBeerProps.push({ isVegan: "Yes" });
-        numberForDivisor += 1;
     }
 
     if (req.body.glutenFree === "isGF") {
-        numberForDivisor += 1;
         newIsGF = "Yes";
         favouriteBeerProps.push({ isGF: "Yes" });
     }
 
     if (req.body.lowCal === "isLowCal") {
-        numberForDivisor += 1;
         newIsLowCal = "Yes";
         favouriteBeerProps.push({ isLowCal: "Yes" });
     }
 
     if (req.body.alcoholFree === "isAlcoholFree") {
-        numberForDivisor += 1;
         newIsAlcoholFree = "Yes";
         favouriteBeerProps.push({ isAlcoholFree: "Yes" });
     }
 
     if (req.body["beerType"] !== "Select an option") {
-        newBeerType = req.body["beerType"];
-        favouriteBeerProps.push({ beerType: newBeerType });
-        numberForDivisor += 1;
-    }
-
-    if (req.body["beerFlavours"] !== "Select an option") {
-        newBeerFlavours.push(req.body["beerFlavours"]);
-        favouriteBeerProps.push({ beerFlavour: newBeerFlavours[0] });
-        numberForDivisor += 1;
-    }
-
-    if (req.body["beerFlavours2"] !== "Select an option") {
-        if (req.body["beerFlavours2"]) {
-            newBeerFlavours.push(req.body["beerFlavours2"])
-            favouriteBeerProps.push({ beerFlavour: newBeerFlavours[1] });
-            numberForDivisor += 1;
+        if (req.body["beerType"] == "lager" || req.body["beerType"] == "ale") {
+            newBeerLOA = req.body["beerType"];
+            favouriteBeerProps.push({ beerLOA: newBeerLOA });
         }
+
+        else {
+            newBeerType = req.body["beerType"];
+            favouriteBeerProps.push({ beerType: newBeerType });
+        }
+        numberForDivisor += 1;
     }
-    if (req.body["beerFlavours3"] !== "Select an option") {
-        if (req.body["beerFlavours3"]) {
-            newBeerFlavours.push(req.body["beerFlavours3"])
-            favouriteBeerProps.push({ beerFlavour: newBeerFlavours[2] });
-            numberForDivisor += 1;
+
+    const reqsToCheck = ["beerFlavours", "beerHops", "beerMalts"];
+    for (let i = 0; i < 3; i++) {
+        for (let j = 1; j <= 3; j++) {
+            console.log("Item: " + reqsToCheck[i]);
+            console.log(req.body[`${reqsToCheck[i]}${j}`]);
+            if (req.body[`${reqsToCheck[i]}${j}`] && req.body[`${reqsToCheck[i]}${j}`] !== "Select an option") {
+                numberForDivisor += 1;
+                if (reqsToCheck[i] === "beerFlavours") {
+                    console.log(req.body[`beerFlavours${j}`]);
+                    newBeerFlavours.push(req.body[`beerFlavours${j}`]);
+                    favouriteBeerProps.push({ beerFlavour: req.body[`beerFlavours${j}`] });
+                }
+
+                else if (reqsToCheck[i] === "beerHops") {
+                    newBeerHops.push(req.body[`beerHops${j}`]);
+                    favouriteBeerProps.push({ beerHop: req.body[`beerHops${j}`] })
+                }
+
+                else if (reqsToCheck[i] === "beerMalts") {
+                    newBeerMalts.push(req.body[`beerMalts${j}`]);
+                    favouriteBeerProps.push({ beerMalt: req.body[`beerMalts${j}`] })
+                }
+            }
         }
     }
 
@@ -150,13 +178,15 @@ function getInfo(req) {
         numberForDivisor += 1;
     }
 
-    let favouriteBeer = new Beer(null, newBeerLOA, newBeerType, newPreciseBeerType, newBeerFlavours, null, newBeerABVGrade, newBrewery, newBeerCountry,
-        null, null, newIngredients, null, newIsVegan, newIsGF, newIsLowCal, newIsAlcoholFree, 1000);
+    let favouriteBeer = new Beer(null, newBeerLOA, newBeerType, newPreciseBeerType, newReallyPreciseBeerType, newBeerFlavours,
+        null, newBeerABVGrade, newBrewery, newBeerCountry, null, null, newIngredients, newBeerHops, newBeerMalts,
+        newBeerAllergens, null, newIsVegan, newIsGF, newIsLowCal, newIsAlcoholFree, 1000);
     for (let i = 0; i < favouriteBeer.length; i++) {
         if (favouriteBeer[i] === "Select an option") {
             favouriteBeer[i] = null;
         }
     }
+    console.log(favouriteBeer);
     return (favouriteBeer);
 }
 
@@ -167,12 +197,10 @@ function getRequired(req, favouriteBeer) {
     requiredFlavours = [];
     if (req.body.vegan === "isVegan") {
         requiredItems.push({ isVegan: favouriteBeer.isVegan });
-        numberForDivisor += 9;
     }
 
     if (req.body.glutenFree === "isGF") {
         requiredItems.push({ isGF: favouriteBeer.isGF });
-        numberForDivisor += 9;
     }
 
     if (req.body.lowCal === "isLowCal") {
@@ -182,12 +210,10 @@ function getRequired(req, favouriteBeer) {
 
     if (req.body.alcoholFree === "isAlcoholFree") {
         requiredItems.push({ isAlcoholFree: favouriteBeer.isAlcoholFree });
-        numberForDivisor += 9;
     }
 
     if (req.body["beerTypeReq"] && req.body["beerTypeReq"] === "required") {
         requiredItems.push({ beerType: favouriteBeer.beerType });
-        numberForDivisor += 9;
     }
 
     if (req.body["beerABVReq"] && req.body["beerABVReq"] === "required") {
@@ -240,12 +266,13 @@ function getPreferences(req) {
 }
 
 //8. function to define the Beer object
-function Beer(beerName, beerLOA, beerType, preciseBeerType, beerFlavours, beerABV, beerABVGrade, brewery, beerCountry, beerImage,
-    beerDesc, beerIngredients, beerURL, isVegan, isGF, isLowCal, isAlcoholFree, matchScore) {
+function Beer(beerName, beerLOA, beerType, preciseBeerType, reallyPreciseBeerType, beerFlavours, beerABV, beerABVGrade, brewery, beerCountry, beerImage,
+    beerDesc, beerIngredients, beerHops, beerMalts, beerAllergens, beerURL, isVegan, isGF, isLowCal, isAlcoholFree, matchScore) {
     this.beerName = beerName;
     this.beerLOA = beerLOA;
     this.beerType = beerType;
     this.preciseBeerType = preciseBeerType;
+    this.reallyPreciseBeerType = reallyPreciseBeerType;
     this.beerFlavours = beerFlavours;
     this.beerABV = beerABV;
     this.beerABVGrade = beerABVGrade;
@@ -254,6 +281,9 @@ function Beer(beerName, beerLOA, beerType, preciseBeerType, beerFlavours, beerAB
     this.beerImage = beerImage;
     this.beerDesc = beerDesc;
     this.beerIngredients = beerIngredients;
+    this.beerHops = beerHops;
+    this.beerMalts = beerMalts;
+    this.beerAllergens = beerAllergens;
     this.beerURL = beerURL;
     this.isVegan = isVegan;
     this.isGF = isGF;
@@ -282,9 +312,16 @@ async function main(favouriteBeer) {
 async function getRandom() {
     try {
         await client.connect();
+        sortedMatches = [];
         console.log("Connected");
 
+
         let mongoOutput = await client.db("BeerDB").collection("beers").aggregate([
+            {
+                "$match": {
+                    "isAlcoholFree": "No"
+                }
+            },
             {
                 "$sample": {
                     "size": 3
@@ -316,27 +353,32 @@ app.post("/report", function (req, res) {
 })
 
 app.post("/getRandom", async function (req, res) {
+    if (req.body["dontAvoidAF"]) {
+        avoidAF = false;
+    }
     await getRandom();
     res.redirect("/results");
 })
 
 app.post("/getSimilar", async function (req, res) {
     requiredItems = [];
+    sortedMatches = [];
+    avoidAF = true;
     numberForDivisor = 0;
     let queryName = req.body["similarBox"];
     query = { $and: [{ beerName: queryName }] };
-    if (req.body["avoidAF"]) {
-        avoidAF = true;
+    if (req.body["dontAvoidAF"]) {
+        avoidAF = false;
     }
     const result = await client.db("BeerDB").collection("beers").find(query);
 
     if (result) {
         for await (let favouriteBeer of result) {
             favouriteBeer = new Beer(queryName, favouriteBeer.beerLOA, favouriteBeer.beerType, favouriteBeer.preciseBeerType,
-                favouriteBeer.beerFlavours, favouriteBeer.beerABV, favouriteBeer.beerABVGrade, favouriteBeer.brewery,
+                favouriteBeer.reallyPreciseBeerType, favouriteBeer.beerFlavours, favouriteBeer.beerABV, favouriteBeer.beerABVGrade, favouriteBeer.brewery,
                 favouriteBeer.beerCountry, undefined, undefined, favouriteBeer.beerIngredients,
-                undefined, favouriteBeer.isVegan, favouriteBeer.isGF, favouriteBeer.isLowCal,
-                favouriteBeer.isAlcoholFree, favouriteBeer.matchScore);
+                favouriteBeer.beerHops, favouriteBeer.beerMalts, favouriteBeer.beerAllergens, undefined,
+                favouriteBeer.isVegan, favouriteBeer.isGF, favouriteBeer.isLowCal, favouriteBeer.isAlcoholFree, favouriteBeer.matchScore);
             if (favouriteBeer.isVegan = "No") {
                 favouriteBeer.isVegan = undefined
             };
@@ -357,15 +399,36 @@ app.post("/getSimilar", async function (req, res) {
                         favouriteBeerProps.push({ beerFlavour: value[flavour] });
                     }
                 }
-                else if (["beerLOA", "beerType", "preciseBeerType", "beerABVGrade", "brewery", "beerCountry",
-                    "isVegan", "isGF", "isLowCal", "isAlcoholFree"].includes(key) &&
-                    value !== undefined &&
+
+                else if (key === "beerHops") {
+                    for (let hop in value) {
+                        numberForDivisor += 1;
+                        favouriteBeerProps.push({ beerHop: value[hop] });
+                    }
+                }
+
+                else if (key === "beerMalts") {
+                    for (let malt in value) {
+                        numberForDivisor += 1;
+                        favouriteBeerProps.push({ beerMalt: value[malt] });
+                    }
+                }
+
+                else if (["beerLOA", "beerType", "preciseBeerType", "reallyPreciseBeerType", "beerABVGrade", "brewery", "beerCountry",
+                    "isVegan", "isGF", "isLowCal", "isAlcoholFree"].includes(key) && value !== undefined &&
                     value !== null && value !== "") {
-                    numberForDivisor += 1;
                     favouriteBeerProps.push({ [key]: value });
                 }
+
+                if (["beerLOA", "beerType", "preciseBeerType", "reallyPreciseBeerType", "beerABVGrade", "brewery",
+                    "beerCountry"].includes(key) && value !== undefined &&
+                    value !== null && value !== "") {
+                    numberForDivisor += 1;
+                }
             }
+
             console.log("Divisor: " + numberForDivisor);
+            console.log(favouriteBeer);
             await main(favouriteBeer).catch(console.error);
 
             res.redirect("/results");
@@ -373,12 +436,23 @@ app.post("/getSimilar", async function (req, res) {
     }
 });
 
+app.post("/signIn", (req, res) => {
+
+})
+
+app.post("/signUp", (req, res) => {
+
+})
+
 //12. findBeers function which has the main logic for finding and handling matching beers from the DB
 async function findBeers(client, favouriteBeer, requiredItems) {
     let query = {};
     sortedMatches = [];
     let potentialMatches = [];
     if (requiredItems.length === 0) {
+        if (favouriteBeer.isAlcoholFree === "Yes") {
+            avoidAF = false;
+        }
         if (avoidAF) {
             query = { $and: [] };
             query.$and.push({ isAlcoholFree: "No" });
